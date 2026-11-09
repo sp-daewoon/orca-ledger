@@ -157,7 +157,7 @@ def main():
             if row.get("state") == "working" and row.get("run", "").startswith("run_")
         }
         for run in sorted(set(re.findall(r"run_[0-9a-f]+", x))):
-            result = orca("orchestration", "worker-list", "--run", run)
+            result = orca("orchestration", "worker-list", "--run", run, "--full")
             if result is None:
                 print(f"  {t} {run}: could not read workers")
                 found = True
