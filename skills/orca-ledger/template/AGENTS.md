@@ -20,6 +20,8 @@ Whichever session the user spoke to handles the request itself. Direct work happ
 - **Where records live:** a worktree of this workspace is just a seat for a session. Wherever you started, read and write `work/`, `map/`, `domains/`, `knowledge/`, `rules/` at the main folder `{{WORKSPACE_PATH}}` by absolute path, and commit there. Do not commit to a worktree branch. If you started in a worktree, run `git merge --ff-only main` first to pick up current rules — and note that uncommitted rule changes do not arrive through that merge, so a clean merge does not mean you are current.
 - **Where code lives:** in the target repository's checkout. Branches are per repository; a branch name here has nothing to do with a branch of the same name in a code repository.
 - **Records accumulate without being asked.** Decisions and the reasoning go in `work/`; newly confirmed facts go to `map/`, `domains/`, `knowledge/`. Committing those files is the user's call.
+- **User instructions and corrections are records.** When the user gives a direction, corrects you, or states a preference, write it in that topic's `state.md` in the same turn, before answering. A standing preference that should bind every session and agent goes in this file; one agent's private memory does not reach the others.
+- **A start is not a success.** Before reporting that a session or worker started, read its terminal and confirm it is working. A start command returning `ok` only means the process launched.
 - **Sessions:** a worktree of this workspace per topic is recommended — Orca then lists them separately and the user can walk into the right one. One session may cover several topics. When a different topic comes up mid-conversation, follow `playbooks/topic-switch.md`.
 
 ### Routing
@@ -34,6 +36,7 @@ The main session decides. When it is a close call, choose the smaller option. If
 | Broad behaviour that is slow to read directly | Read-only subagents in parallel |
 | A bug with an unknown cause | Main session, following `playbooks/debug.md` if present; delegate only if the repro is expensive |
 | A change that is hard to implement, has an independent contract, and a clear proof of completion | Delegate to an Orca worker |
+| Giving a topic to another agent that the user will follow, or that should keep its own state | A main session in a side tab: `orca agent launch --agent <agent> --worktree current --focus --prompt "<brief>" --json`. It follows this contract and owns its own `work/<topic>/state.md`. When the request could mean this or a worker, this is the default; an Orca worker is for a bounded task that reports back once |
 | A design choice that genuinely forks | Write the options down and ask the user; do not pick silently |
 | Comparing two approaches, or checking one agent's work with another | Cross-agent work — `playbooks/cross-work.md`, only when the user asks |
 

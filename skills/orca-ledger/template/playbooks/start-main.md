@@ -14,7 +14,7 @@ Running `claude` yourself in an Orca terminal on this folder is the same thing.
 
 To start a session on its *own* worktree of this workspace, with a first prompt, use `orca worktree create --agent claude --prompt "<request>"` — see `playbooks/topic-switch.md`.
 
-There is no `orca agent launch` in the Orca CLI. Check `orca --help` before copying a command out of any document, including this one.
+To start an agent in a side tab of an existing workspace with a first prompt, use `orca agent launch --agent <agent> --worktree current --focus --prompt "<request>" --json`. Check `orca --help` before copying a command out of any document, including this one.
 
 ## Codex
 

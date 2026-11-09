@@ -19,6 +19,7 @@ Only the main session writes it. Workers report; the main session transcribes.
 | Before starting | A row *before* `worker-start`. State `planned`, expected path, base commit |
 | Just after starting | The real branch, Run and dispatch. State `working` |
 | In between | When the stage or next action changes, when a worker stalls or asks, before moving to other work |
+| The user directs or corrects | In the same turn, before answering: what they said and what changes because of it |
 | Done | On `worker_done`: last commit and the main session's verification result. State `done` |
 | After orchestration | What was adopted and dropped, workers released, what was put on the user's checkout, what needs tidying. Reasons go in `decision.md` |
 | Tidying | Rows you removed become state `deleted`. When everything is finished, stage `closed` |
