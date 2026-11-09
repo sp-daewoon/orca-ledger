@@ -1,0 +1,16 @@
+# system <-> repository <-> responsibility
+#
+# - name: system name
+#   repos: [repository folder name]
+#   path: absolute path of the checkout on this machine
+#   responsibility: what it is responsible for
+#   status: confirmed | assumed | historical
+#   evidence: [code location, commit, document, session]
+#   checked_at: YYYY-MM-DD
+#   note: optional. the limits of what you actually checked
+#
+# What `confirmed` means: you read it in the code or in a repository config file.
+# It does NOT mean that is what runs in production — config servers and
+# environment variables can override it. Say so in `note` when you did not check.
+#
+# Nothing registered yet. Add a system only once you have confirmed it in code.

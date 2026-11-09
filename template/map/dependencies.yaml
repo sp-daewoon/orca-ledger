@@ -1,0 +1,15 @@
+# who calls whom
+#
+# - from: caller
+#   to: callee
+#   type: http | grpc | kafka | sqs | rabbitmq | db | s3 | redis | ...
+#   summary: what the call is for
+#   status: confirmed | assumed | historical
+#   evidence: [code location, commit, document, session]
+#   checked_at: YYYY-MM-DD
+#   note: optional. the limits of what you actually checked
+#
+# `confirmed` means the same thing as in map/systems.yaml: read in code,
+# not verified against production.
+#
+# Nothing registered yet.

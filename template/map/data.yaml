@@ -1,0 +1,15 @@
+# tables and events, and who reads and writes them
+#
+# - name: table or event name
+#   kind: table | event
+#   readers: [systems that read it]
+#   writers: [systems that write it]
+#   status: confirmed | assumed | historical
+#   evidence: [code location, commit, document, session]
+#   checked_at: YYYY-MM-DD
+#   note: optional. the limits of what you actually checked
+#
+# There is no guarantee you found every reader and writer. Record the ones you
+# found, and say so in `note`.
+#
+# Nothing registered yet.
