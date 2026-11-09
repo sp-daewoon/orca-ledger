@@ -17,31 +17,52 @@ If there is none and the user asked to set one up, scaffold it.
 
 The template lives in this skill's repository under `template/`. Copy it, then fill in the placeholders. Do not invent structure that is not in the template.
 
-### 1. Ask only what you cannot infer
+### 1. Find where their repositories already live
 
-Three things, in one round. Do not ask more.
+Never assume a layout, and never hardcode a path like `~/projects` or `~/IdeaProjects`. People keep code in different places and at different depths. Work it out from what is on the machine, in this order, and stop at the first one that answers:
 
-- **Where:** default is a sibling of their code repositories, e.g. `~/projects/hq`. Suggest a path and let them correct it.
+1. **Ask Orca.** It already knows the repositories this user works on:
+
+   ```text
+   orca repo list --json
+   ```
+
+   Take the `path` of each repo and find their deepest common parent directory. If the user has repos in several unrelated trees, take the directory holding the most of them. That parent is where the workspace belongs, as a sibling of the repositories — not inside one of them.
+
+2. **Use the current directory.** If Orca lists nothing, and the working directory is inside a git repository, use that repository's parent. `git rev-parse --show-toplevel` gives the repository root.
+
+3. **Ask, with no default of your own.** Only if neither worked: ask where their code repositories live, and derive the parent from their answer.
+
+Then propose `<that parent>/<name>` and let them correct both parts. Default the name to `hq`; if a folder of that name is taken, say so and propose another rather than writing into it.
+
+Check before you copy anything: the target must not already exist, or must be empty. If it exists with files in it, stop and ask — never merge the template into a folder that already has contents.
+
+### 2. Ask only what you cannot infer
+
+Two things, in one round, along with the path you propose. Do not ask more.
+
 - **Scope:** what work this workspace covers, in one phrase ("our payments platform", "my personal projects"). This is the first line of the contract. If they want to keep it open, write "the repositories listed in `map/systems.yaml`" and leave the map empty.
 - **Working preferences:** anything about how they want the agent to behave — language to answer in, tone, a review step they always want. Optional; leave the section out if they have none.
 
 Do **not** populate `map/`, `domains/` or `knowledge/` at setup time. Those get filled from code, as the work happens, with evidence. A map invented at setup is exactly the stale-fact problem the workspace exists to prevent.
 
-### 2. Copy and substitute
+### 3. Copy and substitute
 
 Copy `template/` to the chosen path, then replace in every file:
 
 | Placeholder | Value |
 |---|---|
-| `{{HQ_NAME}}` | The workspace name — usually the folder name |
-| `{{HQ_PATH}}` | Absolute path of the workspace |
-| `{{HQ_PARENT}}` | Absolute path of its parent folder |
-| `{{HQ_SCOPE}}` | The scope phrase from step 1 |
+| `{{HQ_NAME}}` | The workspace name — the folder name |
+| `{{HQ_PATH}}` | Absolute path of the workspace, resolved — no `~`, no `..`, no relative path |
+| `{{HQ_PARENT}}` | Absolute path of its parent, derived from `{{HQ_PATH}}`, not typed out by hand |
+| `{{HQ_SCOPE}}` | The scope phrase from step 2 |
 | `{{HQ_PREFERENCES}}` | The preferences paragraph, or remove the line entirely |
+
+Paths must be written out in full. Agents read these files in sessions started from other folders, where `~` and relative paths resolve differently or not at all.
 
 Check no `{{` remains anywhere before you report done.
 
-### 3. Initialise and register
+### 4. Initialise and register
 
 ```text
 git init -b main && git add . && git commit -m "orca-hq workspace"
@@ -50,7 +71,7 @@ orca repo add --path <workspace path> --json
 
 The commit matters: Orca cannot create a worktree session from a branch with no commits. Do not add a remote — the workspace describes how the user's systems fit together, so pushing it is their decision, not a default.
 
-### 4. Report
+### 5. Report
 
 Give them: the path, that it is registered with Orca, the output of `python3 scripts/hq-status.py`, and one line on what to do next — start the next piece of real work from this folder, and the map fills itself in.
 

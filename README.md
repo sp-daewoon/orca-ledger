@@ -7,12 +7,18 @@ You start your agent one level **above** your repos, in a small git repository o
 No binary. No daemon. No service to sign up for. Markdown, three skills, and one stdlib Python script.
 
 ```bash
-npx skills add <your-org>/orca-hq --agent claude-code
+npx skills add sp-daewoon/orca-hq --agent claude-code
 ```
 
 Then tell your agent: **"set up my orca-hq workspace"**.
 
-> Unofficial. Not affiliated with Stably or the Orca project.
+## About the name
+
+It is called `orca-hq` because that is what it is: a way to get more out of [Orca](https://github.com/stablyai/orca).
+
+This is not a general-purpose harness that happens to support Orca. The reconciliation below only works because Orca reports worktree, dispatch and worker state over a CLI with `--json` — point it at anything else and it is a Markdown convention and a script that exits with an error. The `orca-` prefix matches how Orca's own skills are already named (`orca-cli`, `orca-linear`, `orca-per-workspace-env`), so the people it is for can find it.
+
+Unofficial, and not affiliated with Stably or the Orca project. If the Orca maintainers would rather it were named something else, open an issue and it gets renamed.
 
 ## The three things it fixes
 
@@ -88,7 +94,7 @@ your-hq/
 Install all three, or just the ones you want:
 
 ```bash
-npx skills add <your-org>/orca-hq --skill orca-hq --agent claude-code
+npx skills add sp-daewoon/orca-hq --skill orca-hq --agent claude-code
 ```
 
 ## Requirements

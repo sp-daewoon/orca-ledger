@@ -7,7 +7,7 @@
 바이너리도 데몬도 가입도 없습니다. 마크다운, 스킬 3개, 표준 라이브러리만 쓰는 파이썬 스크립트 하나입니다.
 
 ```bash
-npx skills add <your-org>/orca-hq --agent claude-code
+npx skills add sp-daewoon/orca-hq --agent claude-code
 ```
 
 설치 후 에이전트에게 **"orca-hq 워크스페이스 만들어줘"**라고 하면 됩니다.
