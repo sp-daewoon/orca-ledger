@@ -29,6 +29,8 @@ Otherwise: never assume a layout, and never hardcode a path like `~/projects` or
    orca repo list --json
    ```
 
+   Read `ok` in the response before trusting it. `ok: false` with `runtime_unavailable` means the Orca app is not running — that is not an empty list. Say so, and either ask the user to start Orca or carry on to the next option; do not silently treat it as "no repositories".
+
    Discard any path that no longer exists on disk — Orca has no command to unregister a repo, so the list outlives deleted folders. Then take the `path` of each remaining repo and find their deepest common parent directory. If the user has repos in several unrelated trees, take the directory holding the most of them. That parent is where the workspace belongs, as a sibling of the repositories — not inside one of them.
 
 2. **Use the current directory.** If Orca lists nothing, and the working directory is inside a git repository, use that repository's parent. `git rev-parse --show-toplevel` gives the repository root.
@@ -72,6 +74,8 @@ Check no `{{` remains anywhere before you report done.
 git init -b main && git add . && git commit -m "orca-hq workspace"
 orca repo add --path <workspace path> --json
 ```
+
+`orca repo add` needs the Orca app running. If it is not, the workspace is still complete and usable — report that registering it is the one step left, and the command to run once Orca is open.
 
 The commit matters: Orca cannot create a worktree session from a branch with no commits. Do not add a remote — the workspace describes how the user's systems fit together, so pushing it is their decision, not a default.
 
