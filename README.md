@@ -87,7 +87,7 @@ your-hq/
 
 | Skill | What it does |
 |---|---|
-| `orca-hq` | Scaffolds the workspace, interviews you for scope, registers it with Orca |
+| `orca-hq` | Scaffolds the workspace from the template it ships with, interviews you for scope, registers it with Orca |
 | `orca-hq-ledger` | Writes and reconciles `work/<topic>/state.md`; finds orphaned resources |
 | `orca-hq-handoff` | Mid-conversation topic switches, spawning a session for a new topic, resuming a closed one |
 

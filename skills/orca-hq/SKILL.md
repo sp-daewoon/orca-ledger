@@ -15,7 +15,7 @@ If there is none and the user asked to set one up, scaffold it.
 
 ## Scaffolding one
 
-The template lives in this skill's repository under `template/`. Copy it, then fill in the placeholders. Do not invent structure that is not in the template.
+The template ships inside this skill, in `template/` next to this file. Resolve it relative to this SKILL.md — the skill is copied into the agent's skills directory on install, so an absolute path from somebody else's machine will not exist. Copy it, then fill in the placeholders. Do not invent structure that is not in the template.
 
 ### 1. Find where their repositories already live
 
@@ -48,7 +48,7 @@ Do **not** populate `map/`, `domains/` or `knowledge/` at setup time. Those get 
 
 ### 3. Copy and substitute
 
-Copy `template/` to the chosen path, then replace in every file:
+Copy `template/` (including its dotfiles — `.gitignore` and the `.gitkeep` files that carry the empty directories) to the chosen path, then replace in every file:
 
 | Placeholder | Value |
 |---|---|
