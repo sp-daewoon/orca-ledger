@@ -14,7 +14,8 @@ Run `python3 scripts/ledger-status.py`, then look for the same topic in `work/*/
 | Call | Handling |
 |---|---|
 | A continuation of the current work | Just continue; do not ask |
-| A question answered in one reply | Answer it, return to the work. No ledger |
+| A future idea or deferred task, with no request to start | Capture/update `work/inbox.md` and continue here; do not open a session or ask a topic-switch question just to remember it |
+| A question answered in one reply | Answer it, return to the work. Capture any future work separately in the inbox |
 | Work done in another session | Ask, as "existing work" |
 | New work | Ask, as "new work" |
 

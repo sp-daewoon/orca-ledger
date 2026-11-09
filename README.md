@@ -6,7 +6,7 @@ It does not orchestrate anything — Orca already does that, and so do several g
 
 You start your agent one level **above** your repos, in a small git repository of plain Markdown. It is where the agent learns what your systems are, what you already decided, which worktrees are still alive, and what it is not allowed to do.
 
-No binary. No daemon. No service to sign up for. Markdown, three skills, and one stdlib Python script.
+No binary. No daemon. No service to sign up for. Markdown, four skills, and one stdlib Python script.
 
 ```bash
 npx skills add sp-daewoon/orca-ledger --agent claude-code
@@ -82,6 +82,7 @@ your-ledger/
 │  ├─ dependencies.yaml  who calls whom
 │  └─ data.yaml          tables, events, readers, writers
 ├─ domains/           one file per area of your product
+├─ work/inbox.md      ideas, future plans and deferred follow-ups
 ├─ work/<topic>/      state.md ledger, briefs, decisions
 ├─ knowledge/         cross-repo decisions, incidents, fixes
 ├─ rules/<repo>.md    rules a worker cannot discover on its own
@@ -100,12 +101,23 @@ The contract is in English — one copy, kept correct. The agent answers you in 
 | `orca-ledger` | Scaffolds the workspace from the template it ships with, picks up your scope and language, registers it with Orca |
 | `orca-ledger-reconcile` | Writes the ledger before the resource exists, then reconciles it against real worktrees and Orca workers |
 | `orca-ledger-handoff` | Mid-conversation topic switches, spawning a session for a new topic, resuming a closed one |
+| `orca-ledger-inbox` | Captures ideas and future/deferred work without starting it, then links the real topic ledger |
 
-Install all three, or just the ones you want:
+Install all four, or just the ones you want:
 
 ```bash
 npx skills add sp-daewoon/orca-ledger --skill orca-ledger --agent claude-code
 ```
+
+## Ideas that are not work yet
+
+“I want to build this later” belongs in `work/inbox.md` even if no topic exists yet. The agent captures it in the same turn, keeps its source and date, and distinguishes `idea`, `planned`, `in_progress`, `on_hold` and `done`. A planned item is not permission to implement it. Starting real work connects the item to its topic's `state.md`; a closed-but-deferred topic stays on hold.
+
+```sh
+npx skills add sp-daewoon/orca-ledger --skill orca-ledger-inbox --agent claude-code
+```
+
+For Codex, use `--agent codex`. Invoke it as `/orca-ledger-inbox` in Claude or `$orca-ledger-inbox` in Codex, or just ask to remember an idea. The skill can create the inbox in an existing workspace without replacing its records. New scaffolds include an empty inbox and capture rules. Existing workspaces need the capture/startup rules added to their `AGENTS.md` if they want every session to do this automatically. The skill and inbox do not send timed reminders, start sessions, or execute the list. `ledger-status.py` still reports topic ledgers; read the inbox separately.
 
 ## Requirements
 

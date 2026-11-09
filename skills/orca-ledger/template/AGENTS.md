@@ -68,7 +68,7 @@ A worker's "done" is not verification. Two workers agreeing is not verification 
 
 ## Starting a session
 
-Run `python3 scripts/ledger-status.py` when you start a session or pick work back up. Single-session work keeps state too. Format and handling: `playbooks/work-state.md`.
+Run `python3 scripts/ledger-status.py` and read `work/inbox.md` when you start a session or pick work back up. Single-session work keeps state too. Format and handling: `playbooks/work-state.md`.
 
 ## Where to look, in order
 
@@ -82,6 +82,17 @@ Run `python3 scripts/ledger-status.py` when you start a session or pick work bac
 When a requirement looks empty, look for the parent issue, title keywords, linked documents and attachments before concluding there is nothing. Compare a document's description of current behaviour against the code and report the differences. Judge behaviour by reading the implementation, not by the name — and if you did not read it, record it as assumed.
 
 Trust an entry in `map/` or `knowledge/` according to its status. If it is not `confirmed`, re-read the code before answering.
+
+## Ideas and deferred work
+
+`work/inbox.md` is the shared capture list for ideas, future plans, deferred tasks and unfinished follow-ups. Capture a passing “I want to build this later” in the same turn, before answering, even when there is no topic ledger yet. Do not require a new session or a topic-switch question just to record it.
+
+- Keep a short summary, date, source session or existing ledger link, and a stable item ID. Reuse an existing item instead of duplicating it. Do not copy transcripts or invent requirements, priorities or deadlines.
+- The table columns stay English: `id`, `status`, `item`, `source`, `topic`, `updated`. Values may use the user's language. Status values are `idea`, `planned`, `in_progress`, `on_hold`, `done`: possible idea, decided for later, work started, deferred, completed.
+- **Capturing or marking an item planned is not permission to implement it.** “Only record this” and future-tense intent do not authorize code, a session/worker, a merge or a push. An explicit request to do the work now follows normal task permissions without asking again merely because it is in the inbox.
+- When work actually starts, create or reuse `work/<topic>/state.md` and link it from the item. The topic ledger owns detailed progress; the inbox is the index. Link existing details rather than copying their TODO list. Do not mark an item done merely because its topic was closed for deferral.
+- Read the inbox at session start and when the user asks what remains. On topic changes or daily wrap-up, reconcile relevant items with their ledgers; show deferred work without silently starting it. `ledger-status.py` does not report inbox items, so read the file separately.
+- Before changing the shared inbox, re-read it and preserve other sessions' entries. If another session is editing the same item, stop that update and coordinate rather than overwriting. Mention briefly that an idea was recorded, without derailing the active task.
 
 ## Record rules
 

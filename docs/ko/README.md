@@ -6,7 +6,7 @@
 
 에이전트를 저장소보다 **한 단계 위**에서 시작시킵니다. 그 위치에 마크다운 git 저장소 하나를 두고, 에이전트가 코드를 건드리기 전에 시스템 구조, 이미 내린 결정, 살아 있는 worktree, 자기가 해도 되는 일의 경계를 먼저 알게 합니다.
 
-바이너리도 데몬도 가입도 없습니다. 마크다운, 스킬 3개, 표준 라이브러리만 쓰는 파이썬 스크립트 하나입니다.
+바이너리도 데몬도 가입도 없습니다. 마크다운, 스킬 4개, 표준 라이브러리만 쓰는 파이썬 스크립트 하나입니다.
 
 ```bash
 npx skills add sp-daewoon/orca-ledger --agent claude-code
@@ -90,3 +90,13 @@ Orca 위에서 worker를 보내고 결정 게이트를 두고 멀티 에이전�
 ## 라이선스
 
 MIT
+
+## 짧게 말한 아이디어도 남기기
+
+“나중에 이런 것 만들 거예요”처럼 지나가며 말씀하신 계획도 `work/inbox.md`에 요약·출처·날짜를 남깁니다. 아이디어(`idea`), 하기로 결정(`planned`), 진행 중(`in_progress`), 보류(`on_hold`), 완료(`done`)를 구분합니다. 기록은 지금 구현하라는 승인이 아니며, 실제 시작하면 해당 `work/<topic>/state.md`로 연결합니다. 보류하려고 닫은 주제를 완료로 취급하지 않습니다.
+
+```sh
+npx skills add sp-daewoon/orca-ledger --skill orca-ledger-inbox --agent claude-code
+```
+
+Codex는 `--agent codex`로 설치합니다. Claude에서 `/orca-ledger-inbox`, Codex에서 `$orca-ledger-inbox`로 부르거나 아이디어를 기록해 달라고 말씀하시면 됩니다. 기존 workspace에는 inbox를 생성할 수 있으며, 모든 세션의 자동 기록은 해당 AGENTS.md에 새 capture·시작 시 inbox 읽기 규칙을 반영해야 합니다. 새 scaffold에는 빈 inbox와 규칙이 포함됩니다. 알림 예약·자동 구현 기능은 없으며, `ledger-status.py`와 별도로 inbox를 읽습니다.
