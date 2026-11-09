@@ -44,7 +44,9 @@ Check before you copy anything: the target must not already exist, or must be em
 Two things, in one round, along with the path you propose. Do not ask more.
 
 - **Scope:** what work this workspace covers, in one phrase ("our payments platform", "my personal projects"). This is the first line of the contract. If they want to keep it open, write "the repositories listed in `map/systems.yaml`" and leave the map empty.
-- **Working preferences:** anything about how they want the agent to behave — language to answer in, tone, a review step they always want. Optional; leave the section out if they have none.
+- **Working preferences:** how the agent should behave. Always set a response language, and do not ask for it — infer it from the language the user is writing to you in. If they write to you in Korean, the line is `Answer in Korean, and always use formal speech (존댓말) — in progress reports as well as final answers.` Add anything else they have told you about how they want to work (tone, a review step they always want), and leave the rest out.
+
+  The contract and the playbooks stay in English whichever language you set. They are instructions an agent reads, there is one copy to keep correct, and the response-language line is what makes the agent talk to the user in theirs. Do not translate the template.
 
 Do **not** populate `map/`, `domains/` or `knowledge/` at setup time. Those get filled from code, as the work happens, with evidence. A map invented at setup is exactly the stale-fact problem the workspace exists to prevent.
 

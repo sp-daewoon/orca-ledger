@@ -83,6 +83,8 @@ your-hq/
 
 `AGENTS.md` is picked up by Claude Code, Codex, Cursor, Gemini CLI and anything else that reads an agent contract; `CLAUDE.md` is a one-line include so Claude Code gets the same file.
 
+The contract is in English — one copy, kept correct. The agent answers you in **your** language: at setup it picks up whichever language you are writing in and records it as a preference, so the harness has no translations to keep in sync and you still get replies in Korean, Japanese, German or whatever you asked in.
+
 ## The skills
 
 | Skill | What it does |
