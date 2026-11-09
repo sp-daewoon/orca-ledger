@@ -73,7 +73,7 @@ The folder the session started in has to still exist. Deleting a session's workt
 
 Without an explicit agent, it reopens with the same agent as the current session. Claude sessions and Codex sessions cannot see each other's conversation, so record the agent name in the ledger too.
 
-A session opened with `orca agent launch --agent codex` cannot be the orchestration main. Open sessions meant for cross-agent work the way `playbooks/start-main.md` describes.
+A Codex session started without the environment options cannot be the orchestration main. Open sessions meant for cross-agent work the way `playbooks/start-main.md` describes.
 
 ## Cost
 

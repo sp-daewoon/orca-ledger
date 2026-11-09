@@ -19,7 +19,9 @@ The template ships inside this skill, in `template/` next to this file. Resolve 
 
 ### 1. Find where their repositories already live
 
-Never assume a layout, and never hardcode a path like `~/projects` or `~/IdeaProjects`. People keep code in different places and at different depths. Work it out from what is on the machine, in this order, and stop at the first one that answers:
+**If the user named a location, that is the location.** Use it, run the empty check below, and skip the rest of this step.
+
+Otherwise: never assume a layout, and never hardcode a path like `~/projects` or `~/IdeaProjects`. People keep code in different places and at different depths. Work it out from what is on the machine, in this order, and stop at the first one that answers:
 
 1. **Ask Orca.** It already knows the repositories this user works on:
 
@@ -27,7 +29,7 @@ Never assume a layout, and never hardcode a path like `~/projects` or `~/IdeaPro
    orca repo list --json
    ```
 
-   Take the `path` of each repo and find their deepest common parent directory. If the user has repos in several unrelated trees, take the directory holding the most of them. That parent is where the workspace belongs, as a sibling of the repositories — not inside one of them.
+   Discard any path that no longer exists on disk — Orca has no command to unregister a repo, so the list outlives deleted folders. Then take the `path` of each remaining repo and find their deepest common parent directory. If the user has repos in several unrelated trees, take the directory holding the most of them. That parent is where the workspace belongs, as a sibling of the repositories — not inside one of them.
 
 2. **Use the current directory.** If Orca lists nothing, and the working directory is inside a git repository, use that repository's parent. `git rev-parse --show-toplevel` gives the repository root.
 
