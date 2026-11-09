@@ -1,10 +1,10 @@
-# {{HQ_NAME}}
+# {{WORKSPACE_NAME}}
 
-This is where an agent starts work on {{HQ_SCOPE}}. It sits one level above the code repositories and takes requests directly.
+This is where an agent starts work on {{WORKSPACE_SCOPE}}. It sits one level above the code repositories and takes requests directly.
 
 Repositories in scope are listed in `map/systems.yaml`. A repository that is not listed has not been looked at yet — that is not the same as out of scope.
 
-{{HQ_PREFERENCES}}
+{{WORKSPACE_PREFERENCES}}
 
 ## How work is done
 
@@ -13,11 +13,11 @@ Repositories in scope are listed in `map/systems.yaml`. A repository that is not
 Whichever session the user spoke to handles the request itself. Direct work happens in the target repository's existing checkout, without a worktree. Delegation follows "Routing" below.
 
 - **Before editing:** read the target repository's own rules (`.claude/`, `CLAUDE.md`, `AGENTS.md`) and `rules/<repo>.md` here. Starting in this folder does not apply a repository's rules automatically.
-- **Checkout check:** switch the target repository to the working branch and edit there; that switch is part of the assigned task. Before editing, look at the branch and the working tree. If the user has uncommitted changes that overlap the edit, stop and ask before touching anything — offer a worktree at `{{HQ_PARENT}}/<repo>-<topic>` and create it only once they agree.
+- **Checkout check:** switch the target repository to the working branch and edit there; that switch is part of the assigned task. Before editing, look at the branch and the working tree. If the user has uncommitted changes that overlap the edit, stop and ask before touching anything — offer a worktree at `{{WORKSPACE_PARENT}}/<repo>-<topic>` and create it only once they agree.
 - **Verification:** run the relevant tests yourself. Anything you could not run, report as not run.
 - **Commits:** never to the user's branch unless asked. Worker branches follow "Delegation".
 - **Work state:** keep `work/<topic>/state.md` current — stage and next action. Write it *before* the conversation moves on, so the work can be resumed at any time. Follow `playbooks/work-state.md`.
-- **Where records live:** a worktree of this workspace is just a seat for a session. Wherever you started, read and write `work/`, `map/`, `domains/`, `knowledge/`, `rules/` at the main folder `{{HQ_PATH}}` by absolute path, and commit there. Do not commit to a worktree branch. If you started in a worktree, run `git merge --ff-only main` first to pick up current rules — and note that uncommitted rule changes do not arrive through that merge, so a clean merge does not mean you are current.
+- **Where records live:** a worktree of this workspace is just a seat for a session. Wherever you started, read and write `work/`, `map/`, `domains/`, `knowledge/`, `rules/` at the main folder `{{WORKSPACE_PATH}}` by absolute path, and commit there. Do not commit to a worktree branch. If you started in a worktree, run `git merge --ff-only main` first to pick up current rules — and note that uncommitted rule changes do not arrive through that merge, so a clean merge does not mean you are current.
 - **Where code lives:** in the target repository's checkout. Branches are per repository; a branch name here has nothing to do with a branch of the same name in a code repository.
 - **Records accumulate without being asked.** Decisions and the reasoning go in `work/`; newly confirmed facts go to `map/`, `domains/`, `knowledge/`. Committing those files is the user's call.
 - **Sessions:** a worktree of this workspace per topic is recommended — Orca then lists them separately and the user can walk into the right one. One session may cover several topics. When a different topic comes up mid-conversation, follow `playbooks/topic-switch.md`.
@@ -65,7 +65,7 @@ A worker's "done" is not verification. Two workers agreeing is not verification 
 
 ## Starting a session
 
-Run `python3 scripts/hq-status.py` when you start a session or pick work back up. Single-session work keeps state too. Format and handling: `playbooks/work-state.md`.
+Run `python3 scripts/ledger-status.py` when you start a session or pick work back up. Single-session work keeps state too. Format and handling: `playbooks/work-state.md`.
 
 ## Where to look, in order
 
@@ -125,7 +125,7 @@ Nothing is connected yet. Fill this table in when you add a tracker, a wiki or m
 Rules that apply the moment something is added:
 
 - **Token values** live only in the credentials file. They are never copied into records, conversation or commits, and never printed. Check that a key exists and has a value, nothing more. If a value has to move, give the user a command to run themselves. Keep the folder holding them out of git.
-- **Expiry:** record the expiry date in `knowledge/` as a `**expires:** YYYY-MM-DD` line and `hq-status.py` will warn 14 days out. If a call fails with 401 or 403, tell the user and point them at renewal.
+- **Expiry:** record the expiry date in `knowledge/` as a `**expires:** YYYY-MM-DD` line and `ledger-status.py` will warn 14 days out. If a call fails with 401 or 403, tell the user and point them at renewal.
 - **Writes** — creating or editing a ticket, changing status, commenting, editing a page — are posting outside. Confirm first, and record target, content, time and session straight afterwards. With one shared token, the tracker's own history cannot tell your sessions apart.
 - **Registration:** tools only appear in sessions started *after* they were registered. Their absence in an older session is not a connection failure.
 - **Production write tools** — creating, editing or deleting monitors, dashboards and pipelines — are production changes. Only on an explicit instruction.
@@ -134,7 +134,7 @@ Rules that apply the moment something is added:
 
 Procedure: `playbooks/topic-switch.md`.
 
-- **Current state:** `[sessions]` in `python3 scripts/hq-status.py`. When you open or switch a session, fix the `session` line in that topic's `state.md`.
+- **Current state:** `[sessions]` in `python3 scripts/ledger-status.py`. When you open or switch a session, fix the `session` line in that topic's `state.md`.
 - **One owner per ledger:** a topic's ledger is written by that topic's session. Other sessions append a log line; they do not overwrite its content.
 - **Tabs:** do not close a tab the user is using, and do not type into that session. Unless they ask you to.
 - **Commits:** name the files. Never `git add -A`. If another session is mid-write in a record, tell the user before including it.

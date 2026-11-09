@@ -29,7 +29,7 @@ def find_orca():
     found = shutil.which("orca") or next((p for p in ORCA_FALLBACKS if os.access(p, os.X_OK)), None)
     if not found:
         sys.exit(
-            "orca CLI not found. orca-hq is built on Orca.\n"
+            "orca CLI not found. orca-ledger is built on Orca.\n"
             "Install Orca (https://github.com/stablyai/orca), or set ORCA_BIN to its path."
         )
     return found

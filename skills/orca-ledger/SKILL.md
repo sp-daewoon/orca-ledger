@@ -1,15 +1,15 @@
 ---
-name: orca-hq
-description: Create or operate an orca-hq workspace — a git repository of Markdown one level above the user's code repositories, holding the system map, work ledgers, cross-repo knowledge and the agent contract, built on Orca's worktrees and workers. Use when the user asks to set up, scaffold or initialise an orca-hq workspace or "agent HQ"; when they ask where their systems, past decisions or active worktrees are recorded; or when you are working in a folder whose AGENTS.md identifies it as an orca-hq workspace and you need to know how it is meant to be used.
+name: orca-ledger
+description: Create or operate an orca-ledger workspace — a git repository of Markdown one level above the user's code repositories, holding the system map, work ledgers, cross-repo knowledge and the agent contract, built on Orca's worktrees and workers. Use when the user asks to set up, scaffold or initialise an orca-ledger workspace, an "agent workspace" or a "work ledger"; when they ask where their systems, past decisions or active worktrees are recorded; or when you are working in a folder whose AGENTS.md identifies it as an orca-ledger workspace and you need to know how it is meant to be used.
 ---
 
-# orca-hq
+# orca-ledger
 
 A workspace that sits above the code repositories. The agent starts there, so it knows the systems, the past decisions, the live resources and its own limits before it touches code.
 
 ## Is one already set up?
 
-Look for a folder containing `AGENTS.md` plus `map/`, `work/` and `playbooks/`. Common spots: the parent of the user's code repositories, or a path they name. If `AGENTS.md` is there, **read it and follow it** — it is the contract and it wins over this skill. Then run `python3 scripts/hq-status.py` and report where things stand.
+Look for a folder containing `AGENTS.md` plus `map/`, `work/` and `playbooks/`. Common spots: the parent of the user's code repositories, or a path they name. If `AGENTS.md` is there, **read it and follow it** — it is the contract and it wins over this skill. Then run `python3 scripts/ledger-status.py` and report where things stand.
 
 If there is none and the user asked to set one up, scaffold it.
 
@@ -37,7 +37,7 @@ Otherwise: never assume a layout, and never hardcode a path like `~/projects` or
 
 3. **Ask, with no default of your own.** Only if neither worked: ask where their code repositories live, and derive the parent from their answer.
 
-Then propose `<that parent>/<name>` and let them correct both parts. Default the name to `hq`; if a folder of that name is taken, say so and propose another rather than writing into it.
+Then propose `<that parent>/<name>` and let them correct both parts. Default the name to `ledger`; if a folder of that name is taken, say so and propose another rather than writing into it.
 
 Check before you copy anything: the target must not already exist, or must be empty. If it exists with files in it, stop and ask — never merge the template into a folder that already has contents.
 
@@ -50,7 +50,7 @@ Two things, in one round, along with the path you propose. Do not ask more.
 
   The contract and the playbooks stay in English whichever language you set. They are instructions an agent reads, there is one copy to keep correct, and the response-language line is what makes the agent talk to the user in theirs. Do not translate the template.
 
-  The same goes for the ledger: `work/<topic>/state.md` keeps its English field and column names in every language, because `hq-status.py` matches them literally. Only the values are written in the user's language.
+  The same goes for the ledger: `work/<topic>/state.md` keeps its English field and column names in every language, because `ledger-status.py` matches them literally. Only the values are written in the user's language.
 
 Do **not** populate `map/`, `domains/` or `knowledge/` at setup time. Those get filled from code, as the work happens, with evidence. A map invented at setup is exactly the stale-fact problem the workspace exists to prevent.
 
@@ -60,11 +60,11 @@ Copy `template/` (including its dotfiles — `.gitignore` and the `.gitkeep` fil
 
 | Placeholder | Value |
 |---|---|
-| `{{HQ_NAME}}` | The workspace name — the folder name |
-| `{{HQ_PATH}}` | Absolute path of the workspace, resolved — no `~`, no `..`, no relative path |
-| `{{HQ_PARENT}}` | Absolute path of its parent, derived from `{{HQ_PATH}}`, not typed out by hand |
-| `{{HQ_SCOPE}}` | The scope phrase from step 2 |
-| `{{HQ_PREFERENCES}}` | The preferences paragraph, or remove the line entirely |
+| `{{WORKSPACE_NAME}}` | The workspace name — the folder name |
+| `{{WORKSPACE_PATH}}` | Absolute path of the workspace, resolved — no `~`, no `..`, no relative path |
+| `{{WORKSPACE_PARENT}}` | Absolute path of its parent, derived from `{{WORKSPACE_PATH}}`, not typed out by hand |
+| `{{WORKSPACE_SCOPE}}` | The scope phrase from step 2 |
+| `{{WORKSPACE_PREFERENCES}}` | The preferences paragraph, or remove the line entirely |
 
 Paths must be written out in full. Agents read these files in sessions started from other folders, where `~` and relative paths resolve differently or not at all.
 
@@ -73,7 +73,7 @@ Check no `{{` remains anywhere before you report done.
 ### 4. Initialise and register
 
 ```text
-git init -b main && git add . && git commit -m "orca-hq workspace"
+git init -b main && git add . && git commit -m "orca-ledger workspace"
 orca repo add --path <workspace path> --json
 ```
 
@@ -83,7 +83,7 @@ The commit matters: Orca cannot create a worktree session from a branch with no 
 
 ### 5. Report
 
-Give them: the path, that it is registered with Orca, the output of `python3 scripts/hq-status.py`, and one line on what to do next — start the next piece of real work from this folder, and the map fills itself in.
+Give them: the path, that it is registered with Orca, the output of `python3 scripts/ledger-status.py`, and one line on what to do next — start the next piece of real work from this folder, and the map fills itself in.
 
 ## Operating one
 
@@ -91,6 +91,6 @@ Once it exists, `AGENTS.md` is the authority. The parts agents most often skip:
 
 - **Status, evidence, date on every fact.** An entry that is not `confirmed` has to be re-read from code before you assert it. Writing `assumed` is not a failure; asserting an assumption as fact is.
 - **Record where, do not copy.** Content inside a repository is referenced by path. Only what spans repositories is written here.
-- **The ledger comes before the resource.** Write the `work/<topic>/state.md` row before spawning a worker or creating a worktree, so a failed spawn still leaves a trace. See `orca-hq-ledger`.
+- **The ledger comes before the resource.** Write the `work/<topic>/state.md` row before spawning a worker or creating a worktree, so a failed spawn still leaves a trace. See `orca-ledger-reconcile`.
 - **Never commit to the user's branch** unless told. Adopted work arrives uncommitted so they review it themselves.
-- **Delete nothing on your own initiative.** `hq-status.py` reads; it does not clean. Unlisted worktrees get reported to the user, not removed.
+- **Delete nothing on your own initiative.** `ledger-status.py` reads; it does not clean. Unlisted worktrees get reported to the user, not removed.

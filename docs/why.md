@@ -38,7 +38,7 @@ A ledger written after creation misses precisely the cases it exists for.
 
 ### Reconciliation reads, never writes
 
-`hq-status.py` compares the ledger with real worktrees and Orca workers, prints the differences, and stops. It does not clean up.
+`ledger-status.py` compares the ledger with real worktrees and Orca workers, prints the differences, and stops. It does not clean up.
 
 Automatic cleanup was rejected. The tool cannot tell a worktree the user created by hand from an orphan an agent abandoned — the only signal is the ledger, and the ledger is exactly what is unreliable when there is a mismatch. So an unlisted worktree is reported to the user, every time, even when it is obvious.
 

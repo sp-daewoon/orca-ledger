@@ -4,7 +4,7 @@ One session may cover several topics. Splitting sessions is a choice the main se
 
 ## 1. Decide
 
-If the request looks unrelated to the current work, run `python3 scripts/hq-status.py` and look for the same topic in `work/*/state.md` and `orca search "<keyword>"`.
+If the request looks unrelated to the current work, run `python3 scripts/ledger-status.py` and look for the same topic in `work/*/state.md` and `orca search "<keyword>"`.
 
 | Call | Handling |
 |---|---|
@@ -37,7 +37,7 @@ Never open or hand off a session without the user's say-so. Give a one-line reas
 2. Open the session. It appears as its own entry in the Orca list.
 
    ```text
-   orca worktree create --repo path:{{HQ_PATH}} --name <topic> --base-branch main --no-parent --comment "<description>" --agent <claude|codex> --prompt "The rules in this worktree may be a stale copy. Read {{HQ_PATH}}/AGENTS.md and {{HQ_PATH}}/work/<topic>/state.md and follow them. Write records in that folder. Start by telling the user briefly what you understand and what you plan. Do not change code before the user confirms." --json
+   orca worktree create --repo path:{{WORKSPACE_PATH}} --name <topic> --base-branch main --no-parent --comment "<description>" --agent <claude|codex> --prompt "The rules in this worktree may be a stale copy. Read {{WORKSPACE_PATH}}/AGENTS.md and {{WORKSPACE_PATH}}/work/<topic>/state.md and follow them. Write records in that folder. Start by telling the user briefly what you understand and what you plan. Do not change code before the user confirms." --json
    ```
 
    To make it look like an entry the user created themselves:

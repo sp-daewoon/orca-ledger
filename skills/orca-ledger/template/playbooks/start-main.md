@@ -1,13 +1,13 @@
 # Starting a main session
 
-The main session starts in `{{HQ_PATH}}`, in an Orca terminal.
+The main session starts in `{{WORKSPACE_PATH}}`, in an Orca terminal.
 
 ## Claude
 
 Open a terminal on the workspace and start the agent in it:
 
 ```text
-orca terminal create --worktree path:{{HQ_PATH}} --title "<topic>" --command "claude" --focus --json
+orca terminal create --worktree path:{{WORKSPACE_PATH}} --title "<topic>" --command "claude" --focus --json
 ```
 
 Running `claude` yourself in an Orca terminal on this folder is the same thing.

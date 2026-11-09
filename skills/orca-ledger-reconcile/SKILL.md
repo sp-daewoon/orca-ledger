@@ -1,6 +1,6 @@
 ---
-name: orca-hq-ledger
-description: Keep and reconcile the work ledger of an orca-hq workspace — work/<topic>/state.md tracking stage, next action, worktrees, branches, Orca runs, dispatches and workers — and find orphaned resources by comparing it against the real worktrees and Orca workers. Use before spawning an Orca worker or creating a worktree, when a task spans more than one reply, when the user asks "where were we" or what is still running, when tidying up after work, or when worktrees and workers have piled up and it is unclear which belong to what.
+name: orca-ledger-reconcile
+description: Keep and reconcile the work ledger of an orca-ledger workspace — work/<topic>/state.md tracking stage, next action, worktrees, branches, Orca runs, dispatches and workers — and find orphaned resources by comparing it against the real worktrees and Orca workers. Use before spawning an Orca worker or creating a worktree, when a task spans more than one reply, when the user asks "where were we" or what is still running, when tidying up after work, or when worktrees and workers have piled up and it is unclear which belong to what.
 ---
 
 # The work ledger
@@ -48,7 +48,7 @@ Drop tables you are not using. Worker state is one of `planned`, `working`, `don
 
 Three mechanical rules, because a script reads this file:
 
-- **The field and column names stay English, in every language.** If you are answering the user in Korean, write `- next: 통합 테스트 실행`, never `- 다음 할 일:`. `hq-status.py` matches the keys literally; translate them and every field reads back as `?` while the reconciliation silently finds nothing. Values are yours to write in any language.
+- **The field and column names stay English, in every language.** If you are answering the user in Korean, write `- next: 통합 테스트 실행`, never `- 다음 할 일:`. `ledger-status.py` matches the keys literally; translate them and every field reads back as `?` while the reconciliation silently finds nothing. Values are yours to write in any language.
 
 - **Paths are absolute and in backticks.** The reconciliation matches on that.
 - **Do not rename the `path`, `state`, `last commit`, `run` and `dispatch` columns.** Renamed columns make the check go quiet, which is worse than noisy.
@@ -61,7 +61,7 @@ Do not only append to the log. When you add a line, fix the stale statements abo
 ## Reconcile
 
 ```text
-python3 scripts/hq-status.py
+python3 scripts/ledger-status.py
 ```
 
 Run it when you start a session, when you pick work back up, and before tidying.

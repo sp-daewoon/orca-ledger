@@ -1,6 +1,6 @@
 ---
-name: orca-hq-handoff
-description: Handle a mid-conversation topic switch in an orca-hq workspace — decide whether the new request continues the current work, hand it to a new Orca session when the user wants that, carry the context across in a state file, and reopen a session whose tab was closed. Use when the user raises something unrelated to the work in progress, says "open a new session for this", "pick that session back up", or "where did we get to on that other thing".
+name: orca-ledger-handoff
+description: Handle a mid-conversation topic switch in an orca-ledger workspace — decide whether the new request continues the current work, hand it to a new Orca session when the user wants that, carry the context across in a state file, and reopen a session whose tab was closed. Use when the user raises something unrelated to the work in progress, says "open a new session for this", "pick that session back up", or "where did we get to on that other thing".
 ---
 
 # Topic switches and handoffs
@@ -9,7 +9,7 @@ One session may cover several topics. Splitting is a choice you offer and the us
 
 ## 1. Read the situation
 
-Run `python3 scripts/hq-status.py`, then look for the same topic in `work/*/state.md` and with `orca search "<keyword>"`.
+Run `python3 scripts/ledger-status.py`, then look for the same topic in `work/*/state.md` and with `orca search "<keyword>"`.
 
 | Call | Handling |
 |---|---|

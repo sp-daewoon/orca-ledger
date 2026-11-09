@@ -10,7 +10,7 @@ Only the main session writes it. Workers report; the main session transcribes.
 - **Updating:** on start, whenever the stage or the next action changes, and at the end. If the conversation changes topic, write the state of what you were doing *before* answering about anything else.
 - **Content:** stage, next action, whether you are waiting on the user, and a log. If you edited code, record path, branch and uncommitted changes in the checkout table. Drop tables you are not using.
 - **Keep facts current.** Do not just append log lines — fix the stale statements above them at the same time ("not read yet", "could not read", and so on).
-- **Resuming:** when the user asks "where were we", read `python3 scripts/hq-status.py` and that `state.md` before answering.
+- **Resuming:** when the user asks "where were we", read `python3 scripts/ledger-status.py` and that `state.md` before answering.
 
 ## When to write
 
@@ -58,9 +58,9 @@ Put `<topic> <description>` in the Orca worktree's `--comment` so it is identifi
 - YYYY-MM-DD HH:MM point: what happened
 ```
 
-**The field and column names are English even when you are answering the user in another language.** `hq-status.py` matches on them literally, so a ledger with translated labels reconciles against nothing and reports `?` for every field. Write the *values* in whatever language you are speaking — `- next: 통합 테스트 실행` is correct, `- 다음 할 일: ...` is not.
+**The field and column names are English even when you are answering the user in another language.** `ledger-status.py` matches on them literally, so a ledger with translated labels reconciles against nothing and reports `?` for every field. Write the *values* in whatever language you are speaking — `- next: 통합 테스트 실행` is correct, `- 다음 할 일: ...` is not.
 
-Paths are absolute and wrapped in backticks — `hq-status.py` matches on that. Worker state is one of `planned`, `working`, `done`, `adopted`, `dropped`, `awaiting cleanup`, `deleted`.
+Paths are absolute and wrapped in backticks — `ledger-status.py` matches on that. Worker state is one of `planned`, `working`, `done`, `adopted`, `dropped`, `awaiting cleanup`, `deleted`.
 
 The column names `path`, `state`, `last commit`, `run` and `dispatch` are what the script reads. Rename them and the reconciliation goes quiet, which is worse than noisy.
 
@@ -71,7 +71,7 @@ State `working` is a claim the script checks: it asks Orca whether that dispatch
 Run it when you start a session, when you pick work back up, and before tidying. It only reads.
 
 ```text
-python3 scripts/hq-status.py
+python3 scripts/ledger-status.py
 ```
 
 | Output | Meaning | What to do |

@@ -1,24 +1,32 @@
-# orca-hq
+# orca-ledger
 
-A workspace harness for running a fleet of coding agents in [Orca](https://github.com/stablyai/orca).
+The record layer for running a fleet of coding agents in [Orca](https://github.com/stablyai/orca).
+
+It does not orchestrate anything — Orca already does that, and so do several good projects built on it. This is what they leave out: a ledger of every worktree, branch, run and worker, reconciled against what is actually still running, next to a map of your systems that cannot quietly go stale.
 
 You start your agent one level **above** your repos, in a small git repository of plain Markdown. It is where the agent learns what your systems are, what you already decided, which worktrees are still alive, and what it is not allowed to do.
 
 No binary. No daemon. No service to sign up for. Markdown, three skills, and one stdlib Python script.
 
 ```bash
-npx skills add sp-daewoon/orca-hq --agent claude-code
+npx skills add sp-daewoon/orca-ledger --agent claude-code
 ```
 
-Then tell your agent: **"set up my orca-hq workspace"**.
+Then tell your agent: **"set up my orca-ledger workspace"**.
 
 ## About the name
 
-It is called `orca-hq` because that is what it is: a way to get more out of [Orca](https://github.com/stablyai/orca).
+A ledger is a book of record you post entries to and reconcile against reality. That is the whole idea, so that is the name.
 
-This is not a general-purpose harness that happens to support Orca. The reconciliation below only works because Orca reports worktree, dispatch and worker state over a CLI with `--json` — point it at anything else and it is a Markdown convention and a script that exits with an error. The `orca-` prefix matches how Orca's own skills are already named (`orca-cli`, `orca-linear`, `orca-per-workspace-env`), so the people it is for can find it.
+The `orca-` prefix is there because this only works on [Orca](https://github.com/stablyai/orca): the reconciliation reads worktree, dispatch and worker state from Orca's CLI as `--json`. Point it at anything else and what is left is a Markdown convention and a script that exits with an error. The prefix also matches how Orca's own skills are named (`orca-cli`, `orca-linear`, `orca-per-workspace-env`), so the people this is for can find it.
 
 Unofficial, and not affiliated with Stably or the Orca project. If the Orca maintainers would rather it were named something else, open an issue and it gets renamed.
+
+## What this is not
+
+There are already several Orca-native projects that dispatch workers, gate decisions and coordinate multi-agent workflows — [dely](https://github.com/hieuphung97/dely), [orca-sdlc-kit](https://github.com/vankhangfet/orca-sdlc-kit) and [mogui-ADE-orchestrator](https://github.com/baksohyeon/mogui-ADE-orchestrator) among them. If you want an orchestrator, use one of those; some of them are good.
+
+This is the other half. None of them keep a durable record of what was created, reconcile it against what is still alive, or put an expiry on a fact. Run this next to whichever orchestrator you use.
 
 ## The three things it fixes
 
@@ -26,16 +34,16 @@ Running one agent is fine. Running a fleet across several repos is where it fall
 
 **1. Resources leak.** You spawn a worker, it finishes, you move on. Three days later you have nine worktrees, two workers Orca still considers live, and a branch you cannot check out anywhere because a worktree you forgot is holding it.
 
-orca-hq keeps a ledger of every worktree, branch, worker and dispatch — written *before* the resource is created, so a failed spawn still leaves a trace. Then it reconciles the ledger against reality:
+orca-ledger keeps a ledger of every worktree, branch, worker and dispatch — written *before* the resource is created, so a failed spawn still leaves a trace. Then it reconciles the ledger against reality:
 
 ```
-$ python3 scripts/hq-status.py
+$ python3 scripts/ledger-status.py
 [alert]
   none
 [open]
   payments-retry | implementing | next: verify worker output against tests | waiting on user: no
 [sessions]
-  payments-retry | implementing | claude 0a3f… `/Users/me/orca/workspaces/hq/payments-retry`
+  payments-retry | implementing | claude 0a3f… `/Users/me/orca/workspaces/ledger/payments-retry`
 [unlisted worktrees]
   /Users/me/orca/workspaces/api/spike-3 (spike-3)
 [ledger mismatch]
@@ -61,12 +69,12 @@ It only reads. It never deletes anything.
 
 Anything not `confirmed` has to be re-read from code before the agent answers. This is the whole trick, and it is three lines of YAML.
 
-**3. "Done" is not done.** A worker reporting success is not verification. Two workers agreeing is not verification either — they share a prior. orca-hq makes the main session verify with code and tests before adopting, and hands the result to you *uncommitted* so you review the diff in your own editor and commit it yourself. The agent never commits to your branch.
+**3. "Done" is not done.** A worker reporting success is not verification. Two workers agreeing is not verification either — they share a prior. orca-ledger makes the main session verify with code and tests before adopting, and hands the result to you *uncommitted* so you review the diff in your own editor and commit it yourself. The agent never commits to your branch.
 
 ## What you get
 
 ```
-your-hq/
+your-ledger/
 ├─ AGENTS.md          the contract: routing, permissions, record rules, search order
 ├─ CLAUDE.md          @AGENTS.md
 ├─ map/
@@ -78,7 +86,7 @@ your-hq/
 ├─ knowledge/         cross-repo decisions, incidents, fixes
 ├─ rules/<repo>.md    rules a worker cannot discover on its own
 ├─ playbooks/         start, ledger, handoff, cross-agent, verify, cleanup
-└─ scripts/hq-status.py
+└─ scripts/ledger-status.py
 ```
 
 `AGENTS.md` is picked up by Claude Code, Codex, Cursor, Gemini CLI and anything else that reads an agent contract; `CLAUDE.md` is a one-line include so Claude Code gets the same file.
@@ -89,19 +97,19 @@ The contract is in English — one copy, kept correct. The agent answers you in 
 
 | Skill | What it does |
 |---|---|
-| `orca-hq` | Scaffolds the workspace from the template it ships with, interviews you for scope, registers it with Orca |
-| `orca-hq-ledger` | Writes and reconciles `work/<topic>/state.md`; finds orphaned resources |
-| `orca-hq-handoff` | Mid-conversation topic switches, spawning a session for a new topic, resuming a closed one |
+| `orca-ledger` | Scaffolds the workspace from the template it ships with, picks up your scope and language, registers it with Orca |
+| `orca-ledger-reconcile` | Writes the ledger before the resource exists, then reconciles it against real worktrees and Orca workers |
+| `orca-ledger-handoff` | Mid-conversation topic switches, spawning a session for a new topic, resuming a closed one |
 
 Install all three, or just the ones you want:
 
 ```bash
-npx skills add sp-daewoon/orca-hq --skill orca-hq --agent claude-code
+npx skills add sp-daewoon/orca-ledger --skill orca-ledger --agent claude-code
 ```
 
 ## Requirements
 
-- [Orca](https://github.com/stablyai/orca) — `orca-hq` is built on Orca's worktrees, workers, dispatches and session search. It is not a generic harness and does not try to be.
+- [Orca](https://github.com/stablyai/orca) — `orca-ledger` is built on Orca's worktrees, workers, dispatches and session search. It is not a generic harness and does not try to be.
 - Python 3.9+ (stdlib only)
 - git
 
