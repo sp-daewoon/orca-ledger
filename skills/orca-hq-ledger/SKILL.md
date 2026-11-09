@@ -49,7 +49,8 @@ Drop tables you are not using. Worker state is one of `planned`, `working`, `don
 Two mechanical rules, because a script reads this file:
 
 - **Paths are absolute and in backticks.** The reconciliation matches on that.
-- **Do not rename the `path`, `state` and `last commit` columns.** Renamed columns make the check go quiet, which is worse than noisy.
+- **Do not rename the `path`, `state`, `last commit`, `run` and `dispatch` columns.** Renamed columns make the check go quiet, which is worse than noisy.
+- **Fill in `dispatch` whenever you set state `working`.** Orca answers a run it does not know with an empty worker list, not an error, so a stale run id with no dispatch to check reads as "all clear".
 
 ## Keep it honest
 

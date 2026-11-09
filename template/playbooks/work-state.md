@@ -60,7 +60,9 @@ Put `<topic> <description>` in the Orca worktree's `--comment` so it is identifi
 
 Paths are absolute and wrapped in backticks — `hq-status.py` matches on that. Worker state is one of `planned`, `working`, `done`, `adopted`, `dropped`, `awaiting cleanup`, `deleted`.
 
-The column names `path`, `state` and `last commit` are what the script reads. Rename them and the reconciliation goes quiet, which is worse than noisy.
+The column names `path`, `state`, `last commit`, `run` and `dispatch` are what the script reads. Rename them and the reconciliation goes quiet, which is worse than noisy.
+
+State `working` is a claim the script checks: it asks Orca whether that dispatch still exists. Orca answers an unknown run with an empty list rather than an error, so without the dispatch id a stale run reads as "all clear".
 
 ## The check
 

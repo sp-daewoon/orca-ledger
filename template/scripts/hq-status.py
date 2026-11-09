@@ -149,20 +149,36 @@ def main():
     print("[unreleased workers]")
     found = False
     for t, x in open_topics.items():
+        # Rows the ledger believes are still running, so we can tell a released
+        # worker apart from a run Orca has never heard of.
+        working = {
+            (row.get("run", ""), row.get("dispatch", ""))
+            for row in parse_rows(x)
+            if row.get("state") == "working" and row.get("run", "").startswith("run_")
+        }
         for run in sorted(set(re.findall(r"run_[0-9a-f]+", x))):
             result = orca("orchestration", "worker-list", "--run", run)
             if result is None:
                 print(f"  {t} {run}: could not read workers")
                 found = True
                 continue
+            seen = set()
             for w in result["workers"]:
                 res = w["resource"]
                 path = res["worktreeId"].split("::")[-1]
+                seen.add(w["dispatchId"])
                 # If the worktree is already gone, only Orca's record remains.
                 if w["terminalState"] != "released" and Path(path).exists():
                     found = True
                     print(f"  {t} {w['dispatchId']} {w['terminalState']} "
                           f"{res.get('retainedReason')}: {path}")
+            # Orca answers an unknown run with an empty list, not an error.
+            # Without this, a stale run id in the ledger reads as "all clear".
+            for ledger_run, dispatch in sorted(working):
+                if ledger_run == run and dispatch not in seen:
+                    found = True
+                    print(f"  {t} {dispatch or '(no dispatch)'}: ledger says working, "
+                          f"but {run} has no such worker in Orca")
     if not found:
         print("  none")
 
