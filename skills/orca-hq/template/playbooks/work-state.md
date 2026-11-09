@@ -58,6 +58,8 @@ Put `<topic> <description>` in the Orca worktree's `--comment` so it is identifi
 - YYYY-MM-DD HH:MM point: what happened
 ```
 
+**The field and column names are English even when you are answering the user in another language.** `hq-status.py` matches on them literally, so a ledger with translated labels reconciles against nothing and reports `?` for every field. Write the *values* in whatever language you are speaking — `- next: 통합 테스트 실행` is correct, `- 다음 할 일: ...` is not.
+
 Paths are absolute and wrapped in backticks — `hq-status.py` matches on that. Worker state is one of `planned`, `working`, `done`, `adopted`, `dropped`, `awaiting cleanup`, `deleted`.
 
 The column names `path`, `state`, `last commit`, `run` and `dispatch` are what the script reads. Rename them and the reconciliation goes quiet, which is worse than noisy.

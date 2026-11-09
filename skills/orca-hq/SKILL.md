@@ -50,6 +50,8 @@ Two things, in one round, along with the path you propose. Do not ask more.
 
   The contract and the playbooks stay in English whichever language you set. They are instructions an agent reads, there is one copy to keep correct, and the response-language line is what makes the agent talk to the user in theirs. Do not translate the template.
 
+  The same goes for the ledger: `work/<topic>/state.md` keeps its English field and column names in every language, because `hq-status.py` matches them literally. Only the values are written in the user's language.
+
 Do **not** populate `map/`, `domains/` or `knowledge/` at setup time. Those get filled from code, as the work happens, with evidence. A map invented at setup is exactly the stale-fact problem the workspace exists to prevent.
 
 ### 3. Copy and substitute

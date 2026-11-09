@@ -46,7 +46,9 @@ Before `worker-start`, before `worktree create`, write the row with state `plann
 
 Drop tables you are not using. Worker state is one of `planned`, `working`, `done`, `adopted`, `dropped`, `awaiting cleanup`, `deleted`.
 
-Two mechanical rules, because a script reads this file:
+Three mechanical rules, because a script reads this file:
+
+- **The field and column names stay English, in every language.** If you are answering the user in Korean, write `- next: 통합 테스트 실행`, never `- 다음 할 일:`. `hq-status.py` matches the keys literally; translate them and every field reads back as `?` while the reconciliation silently finds nothing. Values are yours to write in any language.
 
 - **Paths are absolute and in backticks.** The reconciliation matches on that.
 - **Do not rename the `path`, `state`, `last commit`, `run` and `dispatch` columns.** Renamed columns make the check go quiet, which is worse than noisy.
