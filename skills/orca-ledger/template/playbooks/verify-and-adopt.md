@@ -24,13 +24,19 @@ Normally:
 git merge --squash <adopted-branch>
 ```
 
-If there are staged changes, or the user's branch already contains the same work and conflicts, do not merge — overwrite the adopted files instead. That leaves no conflict markers, and the difference between the adopted work and the original code stays visible:
+If there are staged changes, or the user's branch already contains the same work and conflicts, do not merge. Copy over only the files the adopted branch changed, and only if the user has not touched them:
 
 ```text
-git diff --name-only <user-branch> <adopted-branch> | git restore --source=<adopted-branch> --staged --worktree --pathspec-from-file=-
+base=$(git merge-base HEAD <adopted-branch>)
+files=$(git diff --name-only "$base" <adopted-branch>)
+git diff --name-only "$base" HEAD -- $files     # must print nothing
+git status --porcelain -- $files                # must print nothing
+git restore --source=<adopted-branch> --staged --worktree -- $files
 ```
 
-Never rewrite history on the user's branch, even if it has pushed commits. Afterwards, `git diff --cached <adopted-branch>` should be empty.
+If either check prints a file, the user changed it too: stop and ask. Do not overwrite it. Never take the file list from `git diff <user-branch> <adopted-branch>`: that also lists the user's own changes since the branch point, and restoring them reverts the user's work.
+
+Never rewrite history on the user's branch, even if it has pushed commits. Afterwards, `git diff --cached <adopted-branch> -- $files` should be empty.
 
 The user reviews it in their own editor, drops what they do not want, and commits.
 
