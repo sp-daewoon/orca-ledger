@@ -9,7 +9,8 @@ If the request looks unrelated to the current work, run `python3 scripts/ledger-
 | Call | Handling |
 |---|---|
 | A continuation of the current work | Just continue; do not ask |
-| A question answered in one reply | Answer it, go back. No ledger |
+| An idea or task for later, without a request to start | Capture/update `work/inbox.md`; keep working here. No new session or topic-switch question |
+| A question answered in one reply | Answer it, go back. Capture any future work separately in the inbox |
 | Work done in another session | Ask, as "existing work" below |
 | New work | Ask, as "new work" below |
 

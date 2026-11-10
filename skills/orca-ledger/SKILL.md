@@ -9,7 +9,7 @@ A workspace that sits above the code repositories. The agent starts there, so it
 
 ## Is one already set up?
 
-Look for a folder containing `AGENTS.md` plus `map/`, `work/` and `playbooks/`. Common spots: the parent of the user's code repositories, or a path they name. If `AGENTS.md` is there, **read it and follow it** — it is the contract and it wins over this skill. Then run `python3 scripts/ledger-status.py` and report where things stand.
+Look for a folder containing `AGENTS.md` plus `map/`, `work/` and `playbooks/`. Common spots: the parent of the user's code repositories, or a path they name. If `AGENTS.md` is there, **read it and follow it** — it is the contract and it wins over this skill. Then run `python3 scripts/ledger-status.py`, read `work/inbox.md` if present, and report where things stand.
 
 If there is none and the user asked to set one up, scaffold it.
 
@@ -94,3 +94,8 @@ Once it exists, `AGENTS.md` is the authority. The parts agents most often skip:
 - **The ledger comes before the resource.** Write the `work/<topic>/state.md` row before spawning a worker or creating a worktree, so a failed spawn still leaves a trace. See `orca-ledger-reconcile`.
 - **Never commit to the user's branch** unless told. Adopted work arrives uncommitted so they review it themselves.
 - **Delete nothing on your own initiative.** `ledger-status.py` reads; it does not clean. Unlisted worktrees get reported to the user, not removed.
+
+
+## Ideas and deferred work
+
+The template includes an empty `work/inbox.md`. Capture future plans there without inventing a topic or starting implementation. When the user asks to remember something or review their backlog, use `orca-ledger-inbox` if installed; the workspace's own AGENTS.md remains authoritative. Do not seed made-up tasks during scaffolding. Creating the inbox alone does not retrofit automatic capture rules into an older personalized contract.

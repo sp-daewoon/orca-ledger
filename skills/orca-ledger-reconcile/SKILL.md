@@ -1,6 +1,6 @@
 ---
 name: orca-ledger-reconcile
-description: Keep and reconcile the work ledger of an orca-ledger workspace — work/<topic>/state.md tracking stage, next action, worktrees, branches, Orca runs, dispatches and workers — and find orphaned resources by comparing it against the real worktrees and Orca workers. Use before spawning an Orca worker or creating a worktree, when a task spans more than one reply, when the user asks "where were we" or what is still running, when tidying up after work, or when worktrees and workers have piled up and it is unclear which belong to what.
+description: Keep and reconcile the work ledger of an orca-ledger workspace — per-topic state.md files tracking stage, next action, worktrees, branches, Orca runs, dispatches and workers — and find orphaned resources by comparing it against the real worktrees and Orca workers. Use before spawning an Orca worker or creating a worktree, when a task spans more than one reply, when the user asks "where were we" or what is still running, when tidying up after work, or when worktrees and workers have piled up and it is unclear which belong to what.
 ---
 
 # The work ledger
@@ -82,3 +82,8 @@ The script only reads. Deleting is a separate, explicit decision: only resources
 - **A worker that says it is live but is not.** `liveness: live` only means the process exists. A worker stopped by a model capacity error never sends `worker_done`. Read its terminal (`orca terminal read --terminal <handle> --limit 20`) before concluding anything, and resume it with `orca terminal send` rather than starting a second one.
 - **A branch locked out everywhere.** One branch checks out in one worktree per clone. A forgotten worktree is why a branch "cannot be checked out".
 - **Orphans with no record.** Almost always a resource created before its ledger row. See the first rule.
+
+
+## Work not started
+
+`work/inbox.md` is the index for ideas and deferred tasks. Read it separately at startup or when the user asks what remains; `ledger-status.py` does not include it. Use `orca-ledger-inbox` when available and follow the workspace contract. Link an item to `work/<topic>/state.md` when work starts. An inbox entry is not permission to implement, and a ledger closed for deferral does not make the item done.

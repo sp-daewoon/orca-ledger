@@ -12,6 +12,12 @@ Only the main session writes it. Workers report; the main session transcribes.
 - **Keep facts current.** Do not just append log lines — fix the stale statements above them at the same time ("not read yet", "could not read", and so on).
 - **Resuming:** when the user asks "where were we", read `python3 scripts/ledger-status.py` and that `state.md` before answering.
 
+## Work not started yet
+
+Capture ideas and future/deferred tasks in `work/inbox.md`, including a short summary, date and source. A topic folder is not required just to remember something. Capturing is not implementation approval.
+
+When the user starts that work, create or reuse its `state.md` and link it from the inbox item. Keep detailed progress in that ledger; update only the index status in the inbox. A closed ledger can mean explicitly deferred work, so do not infer that the inbox item is done. Read the inbox separately from `ledger-status.py` at startup and reconcile relevant items at wrap-up.
+
 ## When to write
 
 | Point | What goes in |
