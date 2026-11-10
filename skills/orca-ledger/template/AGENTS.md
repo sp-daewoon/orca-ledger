@@ -117,10 +117,35 @@ Worktrees a worker created stay until the user says to remove them, so the sessi
 
 ## Branches
 
+These apply to code repositories, for every agent and every size of change. This workspace's own records are the exception: they are committed on its `main`.
+
+**Never work on `main` directly.** No edits, commits or conflict resolution on it. `main` only receives finished work by merge.
+
+**Always branch from the current `origin/main`.** Where there is no remote, branch from local `main`.
+
+```text
+git fetch origin
+git switch -c feature/<topic> origin/main
+```
+
+**Releasing to `main`**, when the user asks for it. Take in `main` on the branch first, so conflicts are resolved and checks re-run there:
+
+```text
+git fetch origin
+git merge origin/main                # on the branch; resolve and re-run checks here
+git switch main
+git merge --ff-only origin/main
+git merge --ff-only feature/<topic>
+git push origin main
+```
+
+If `--ff-only` refuses, `main` moved: go back to the branch and merge again. Never resolve it on `main`. Where a repository merges through pull requests, the PR merge does this job. No rebase or squash is required.
+
+**One session per checkout.** Do not switch the branch of a checkout another session is using, and stop if `git status` shows a change you did not make. Take your own worktree instead.
+
 Unless told otherwise:
 
-- Fetch `main` and branch from the current `origin/main`. Where there is no remote, branch from local `main`.
-- Name it `feature/<topic>`, in short kebab-case.
+- Name the branch `feature/<topic>`, in short kebab-case.
 - Where a repository uses a ticket scheme, follow it. This workspace does not assume one.
 - When one topic needs several branches — cross-agent work — distinguish them as `feature/<topic>-codex`, `feature/<topic>-claude`.
 
