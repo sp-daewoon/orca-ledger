@@ -35,7 +35,7 @@ Finish browser task spaces this session opened and still owns (keep nothing). Le
 Write a short report first — ledgers updated and their next step, commit hash, what was released, anything unverified. Then, as the **last tool call of that same reply**, run:
 
 ```sh
-<this skill's folder>/scripts/close-own-tab.sh 3
+<this skill's folder>/scripts/close-own-tab.sh
 ```
 
-It resolves this session's terminal from `ORCA_TAB_ID`/`ORCA_AGENT_PANE` and closes the tab 3 seconds later, detached so it survives the turn ending. Do not take the terminal id from a ledger: a resumed session usually lives in a new tab and the recorded id points at the old one. If the script prints `ERROR`, tell the user the exact `orca terminal close --terminal <id> --tab` command to run instead. Do not tell the user to check whether it closed; if the command was scheduled, the session ends.
+Orca names the session's own terminal (`ORCA_TERMINAL_HANDLE`, or `orca terminal show` with no handle), so the script needs no lookup. It checks the handle with Orca, then closes that tab two seconds later, detached so the final reply renders first and the close survives the turn ending. Never take the terminal id from a ledger: a resumed session lives in a new tab and the recorded id points at the old one. If the script prints `ERROR`, tell the user the exact `orca terminal close --terminal <id> --tab` command to run instead. Do not tell the user to check whether it closed; if the command was scheduled, the session ends.

@@ -1,16 +1,20 @@
 #!/bin/sh
-# Close the Orca tab hosting the calling agent session after a short delay.
-# Resolves the terminal from this process's own environment (ORCA_TAB_ID /
-# ORCA_AGENT_PANE), never from a ledger: a resumed session usually runs in a
-# new tab, and a recorded terminal id points at the old one.
-# Detached with nohup so it outlives the agent's turn.
+# Close the Orca tab that hosts this agent session, a moment after the reply ends.
+#
+# Orca tells a session which terminal it is: ORCA_TERMINAL_HANDLE is set in every
+# managed terminal, and `orca terminal show` with no handle describes the current one.
+# Never use a terminal id copied from a ledger: a resumed session runs in a new tab
+# and the recorded id points at the old one, so the close silently misses.
+#
+# The close is detached (nohup) so it outlives the agent's turn; the short delay lets
+# the final reply render before the tab disappears.
 O=$(command -v orca || echo /Applications/Orca.app/Contents/Resources/bin/orca)
-[ -n "$ORCA_TAB_ID" ] || { echo "ERROR: not inside an Orca tab (ORCA_TAB_ID is empty)"; exit 1; }
-LEAF=${ORCA_AGENT_PANE#*:}
-LIST=$("$O" terminal list 2>/dev/null)
-TERM_ID=$(printf '%s\n' "$LIST" | grep "tab=$ORCA_TAB_ID" | grep "leaf=$LEAF" | grep -o 'term_[0-9a-f-]*' | head -1)
-[ -n "$TERM_ID" ] || TERM_ID=$(printf '%s\n' "$LIST" | grep "tab=$ORCA_TAB_ID" | grep -o 'term_[0-9a-f-]*' | head -1)
-[ -n "$TERM_ID" ] || { echo "ERROR: no terminal found for tab $ORCA_TAB_ID"; exit 1; }
-DELAY=${1:-3}
-nohup /bin/sh -c "sleep $DELAY; '$O' terminal close --terminal $TERM_ID --tab" >/dev/null 2>&1 </dev/null &
-echo "closing $TERM_ID (tab $ORCA_TAB_ID) in ${DELAY}s"
+DELAY=${1:-2}
+HANDLE=${ORCA_TERMINAL_HANDLE:-}
+if [ -z "$HANDLE" ]; then
+  HANDLE=$("$O" terminal show --json 2>/dev/null | grep -o '"handle": *"term_[^"]*"' | head -1 | grep -o 'term_[^"]*')
+fi
+[ -n "$HANDLE" ] || { echo "ERROR: this session is not in an Orca-managed terminal"; exit 1; }
+"$O" terminal show --terminal "$HANDLE" >/dev/null 2>&1 || { echo "ERROR: Orca does not recognise $HANDLE"; exit 1; }
+nohup /bin/sh -c "sleep $DELAY; '$O' terminal close --terminal $HANDLE --tab" >/dev/null 2>&1 </dev/null &
+echo "closing tab of $HANDLE in ${DELAY}s"
