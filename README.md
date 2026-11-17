@@ -102,8 +102,9 @@ The contract is in English — one copy, kept correct. The agent answers you in 
 | `orca-ledger-reconcile` | Writes the ledger before the resource exists, then reconciles it against real worktrees and Orca workers |
 | `orca-ledger-handoff` | Mid-conversation topic switches, spawning a session for a new topic, resuming a closed one |
 | `orca-ledger-inbox` | Captures ideas and future/deferred work without starting it, then links the real topic ledger |
+| `ssStop` | One-step wrap-up: saves the topic ledger, commits only this session's records, releases browser spaces and closes the Orca tab |
 
-Install all four, or just the ones you want:
+Install all five, or just the ones you want:
 
 ```bash
 npx skills add sp-daewoon/orca-ledger --skill orca-ledger --agent claude-code
