@@ -100,3 +100,7 @@ npx skills add sp-daewoon/orca-ledger --skill orca-ledger-inbox --agent claude-c
 ```
 
 Codex는 `--agent codex`로 설치합니다. Claude에서 `/orca-ledger-inbox`, Codex에서 `$orca-ledger-inbox`로 부르거나 아이디어를 기록해 달라고 말씀하시면 됩니다. 기존 workspace에는 inbox를 생성할 수 있으며, 모든 세션의 자동 기록은 해당 AGENTS.md에 새 capture·시작 시 inbox 읽기 규칙을 반영해야 합니다. 새 scaffold에는 빈 inbox와 규칙이 포함됩니다. 알림 예약·자동 구현 기능은 없으며, `ledger-status.py`와 별도로 inbox를 읽습니다.
+
+## ledger v2
+
+`state.md`는 frontmatter(`stage`, `next`, `owner` 등)로 현재 상태만 담고, 이력은 `log.md`, 결정은 `decisions.md`로 나눕니다. `scripts/ledger-lint.py`가 스키마, 30일 넘은 `confirmed` 항목, 사라진 경로를 점검합니다. 기존 workspace 업그레이드 방법: [docs/migrating-to-v2.md](../migrating-to-v2.md) (영문).

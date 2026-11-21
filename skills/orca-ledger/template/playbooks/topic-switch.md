@@ -27,7 +27,7 @@ Never open or hand off a session without the user's say-so. Give a one-line reas
 
 ## 4. Doing it here
 
-- Create `work/<topic>/state.md` for the new work, with this session in `session`. For existing work, continue that ledger.
+- Create `work/<topic>/state.md` for the new work, with this session as `owner`. For existing work, continue that ledger.
 - Every time you switch topics, write the state of the one you are leaving.
 - When a topic finishes, say what is still waiting and ask which to pick up. If only one thing is waiting, say what its next action is and ask whether to continue.
 
@@ -47,8 +47,8 @@ Never open or hand off a session without the user's say-so. Give a one-line reas
    - **Branch:** `--name feature/X` creates the branch as `feature-X`. Rename it afterwards with `git -C <worktree> branch -m feature/<topic>`.
    - **Display name:** `orca worktree set --worktree path:<worktree> --display-name "<topic> <description>"`.
 
-3. Record the created worktree path in the ledger's `session`, in backticks.
-4. Record the session id. Find it in the newest file whose prompt contains the ledger path.
+3. Record the created worktree path as a row of the ledger's `Other resources` table (`| `<path>` | session seat | working |`), in backticks.
+4. Set `owner: <agent>:<session id>` (or leave `owner: operator` under the operator model and log the delegation in `log.md`). Find it in the newest file whose prompt contains the ledger path.
    - **Claude:** the filename under `~/.claude/projects/<transformed worktree path>/`
    - **Codex:** `payload.id` on the first line of a file under `~/.codex/sessions/<year>/<month>/<day>/`
 5. In the original session, say what you handed off and where, restate the current work and its next action, and carry on. Do not make the user explain the context again.
@@ -56,7 +56,7 @@ Never open or hand off a session without the user's say-so. Give a one-line reas
 ## 6. Starting as the new session
 
 - Read `state.md` and say the request, what you understand, and your plan, before anything else.
-- Point the ledger's `session` at yourself.
+- Point the ledger's `owner` at yourself, unless the operator model says otherwise.
 - For anything the ledger does not cover, find the original session with `orca search`.
 
 ## Going back to a closed session

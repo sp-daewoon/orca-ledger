@@ -16,10 +16,10 @@ Whichever session the user spoke to handles the request itself. Direct work happ
 - **Checkout check:** switch the target repository to the working branch and edit there; that switch is part of the assigned task. Before editing, look at the branch and the working tree. If the user has uncommitted changes that overlap the edit, stop and ask before touching anything — offer a worktree at `{{WORKSPACE_PARENT}}/<repo>-<topic>` and create it only once they agree.
 - **Verification:** run the relevant tests yourself. Anything you could not run, report as not run.
 - **Commits:** never to the user's branch unless asked. Worker branches follow "Delegation".
-- **Work state:** keep `work/<topic>/state.md` current — stage and next action. Write it *before* the conversation moves on, so the work can be resumed at any time. Follow `playbooks/work-state.md`.
+- **Work state:** keep `work/<topic>/state.md` (or `work/<domain>/<topic>/state.md`) current — stage and next action in its frontmatter; history in `log.md`, decisions in `decisions.md`. Write it *before* the conversation moves on, so the work can be resumed at any time. Follow `playbooks/work-state.md`.
 - **Where records live:** a worktree of this workspace is just a seat for a session. Wherever you started, read and write `work/`, `map/`, `domains/`, `knowledge/`, `rules/` at the main folder `{{WORKSPACE_PATH}}` by absolute path, and commit there. Do not commit to a worktree branch. If you started in a worktree, run `git merge --ff-only main` first to pick up current rules — and note that uncommitted rule changes do not arrive through that merge, so a clean merge does not mean you are current.
 - **Where code lives:** in the target repository's checkout. Branches are per repository; a branch name here has nothing to do with a branch of the same name in a code repository.
-- **Records accumulate without being asked.** Decisions and the reasoning go in `work/`; newly confirmed facts go to `map/`, `domains/`, `knowledge/`. Committing those files is the user's call.
+- **Records accumulate without being asked.** Decisions and the reasoning go in `work/`; newly confirmed facts go to `map/`, `domains/`, `knowledge/`. The ledger owner commits the record files it changed at the end of each turn, naming them (`git commit -m "records: <topic> <summary>" -- <files>`); see `playbooks/work-state.md`. Code commits are still the user's call.
 - **User instructions and corrections are records.** When the user gives a direction, corrects you, or states a preference, write it in that topic's `state.md` in the same turn, before answering. A standing preference that should bind every session and agent goes in this file; one agent's private memory does not reach the others.
 - **A start is not a success.** Before reporting that a session or worker started, read its terminal and confirm it is working. A start command returning `ok` only means the process launched.
 - **Sessions:** a worktree of this workspace per topic is recommended — Orca then lists them separately and the user can walk into the right one. One session may cover several topics. When a different topic comes up mid-conversation, follow `playbooks/topic-switch.md`.
@@ -68,20 +68,20 @@ A worker's "done" is not verification. Two workers agreeing is not verification 
 
 ## Starting a session
 
-Run `python3 scripts/ledger-status.py` and read `work/inbox.md` when you start a session or pick work back up. Single-session work keeps state too. Format and handling: `playbooks/work-state.md`.
+Run `python3 scripts/ledger-status.py` (it includes `scripts/ledger-lint.py`) and read `work/inbox.md` when you start a session or pick work back up. Single-session work keeps state too. Format and handling: `playbooks/work-state.md`.
 
 ## Where to look, in order
 
 1. `map/` — systems, repositories, call paths, data
 2. `domains/` — what each area of the product does
-3. `work/<topic>/` — briefs and adoption decisions, open or closed
+3. `work/<topic>/` or `work/<domain>/<topic>/` — `state.md` first, then `decisions.md` and `log.md`; `work/_archive/` for old closed topics
 4. `knowledge/` — decisions, incidents and fixes that span repositories
 5. `orca search "<keyword>"` — transcripts of past sessions
 6. The repository's own code and team docs
 
 When a requirement looks empty, look for the parent issue, title keywords, linked documents and attachments before concluding there is nothing. Compare a document's description of current behaviour against the code and report the differences. Judge behaviour by reading the implementation, not by the name — and if you did not read it, record it as assumed.
 
-Trust an entry in `map/` or `knowledge/` according to its status. If it is not `confirmed`, re-read the code before answering.
+Trust an entry in `map/`, `domains/` or `knowledge/` according to its status. If it is not `confirmed`, re-read the code before answering. `confirmed` expires: an entry whose `checked_at` is more than 30 days old is treated as `assumed` until re-read — then update `checked_at`, or downgrade it.
 
 ## Ideas and deferred work
 
@@ -173,8 +173,9 @@ Rules that apply the moment something is added:
 
 Procedure: `playbooks/topic-switch.md`.
 
-- **Current state:** `[sessions]` in `python3 scripts/ledger-status.py`. When you open or switch a session, fix the `session` line in that topic's `state.md`.
-- **One owner per ledger:** a topic's ledger is written by that topic's session. Other sessions append a log line; they do not overwrite its content.
+- **Current state:** `[sessions]` in `python3 scripts/ledger-status.py` lists each topic's `owner`. When you take a topic over, fix `owner` in its `state.md`.
+- **One owner per ledger:** only the `owner` rewrites `state.md`. Everyone else appends to `log.md`.
+- **Owner model:** per-session — the topic's session owns it. (Option: set `owner: operator` and name the operator agent here, when one operator agent or bot runs the workspace; delegated sessions own a ledger only for their task and hand it back. See `playbooks/work-state.md`.)
 - **Tabs:** do not close a tab the user is using, and do not type into that session. Unless they ask you to.
 - **Commits:** name the files. Never `git add -A`. If another session is mid-write in a record, tell the user before including it.
 - **Credentials:** tokens and credential files never enter this workspace's records.
