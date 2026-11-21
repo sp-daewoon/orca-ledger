@@ -5,9 +5,9 @@ description: Keep and reconcile the work ledger of an orca-ledger workspace — 
 
 # The work ledger
 
-One file per topic: `work/<topic>/state.md`. It is how work survives a session ending, and how resources that nobody owns get found.
+One folder per topic: `work/<topic>/` or, grouped by domain, `work/<domain>/<topic>/`. It holds `state.md` (the current state — small, rewritten), `log.md` (append-only history) and `decisions.md` (what was decided and why). It is how work survives a session ending, and how resources that nobody owns get found. Closed topics older than 30 days move to `work/_archive/`.
 
-Only the main session writes it. Workers report; the main session transcribes.
+Only the ledger's `owner` rewrites `state.md`; everyone else appends to `log.md`. Workers report; the owner transcribes. By default the owner is the topic's session. In the optional operator model a single operator agent owns every ledger (`owner: operator`) and a delegated session owns one only for its task, then hands it back.
 
 ## Write it before you create anything
 
@@ -16,13 +16,21 @@ Before `worker-start`, before `worktree create`, write the row with state `plann
 ## The format
 
 ```markdown
+---
+id: <topic>
+domain: <domain>            # optional
+stage: brief                # brief | working | verifying | user-review | waiting-external | done | closed
+next: <one line, so the next session can act immediately>
+waiting_on: none            # none | user: <question> | external: <who or what>
+owner: operator             # operator | <agent>:<session id>
+repos: [<repo>]
+updated: YYYY-MM-DD HH:MM
+verified_at:                # last verification by the owner, or empty
+---
+
 # <topic>
 
-- stage: brief | working | verifying | user review | awaiting cleanup | closed
-- next: <one line, so the next session can act immediately>
-- waiting on user: no | <the question>
-- session: <agent> <session id> `<absolute path of the start folder>`
-- updated: YYYY-MM-DD HH:MM
+<two or three lines of context; history goes in log.md>
 
 ## Workers
 
@@ -38,17 +46,15 @@ Before `worker-start`, before `worktree create`, write the row with state `plann
 
 | path | what it is | state |
 |---|---|---|
-
-## Log
-
-- YYYY-MM-DD HH:MM point: what happened
 ```
+
+`stage` is one of the seven words, never free text. `next` is never empty or `?` while the topic is open. Full field meanings: the workspace's `playbooks/work-state.md`. Ledgers with the v1 `- stage:` bullet header are still read; the lint asks for them to be migrated.
 
 Drop tables you are not using. Worker state is one of `planned`, `working`, `done`, `adopted`, `dropped`, `awaiting cleanup`, `deleted`.
 
-Three mechanical rules, because a script reads this file:
+Mechanical rules, because scripts read this file:
 
-- **The field and column names stay English, in every language.** If you are answering the user in Korean, write `- next: 통합 테스트 실행`, never `- 다음 할 일:`. `ledger-status.py` matches the keys literally; translate them and every field reads back as `?` while the reconciliation silently finds nothing. Values are yours to write in any language.
+- **The field and column names stay English, in every language.** If you are answering the user in Korean, write `next: 통합 테스트 실행`, never `다음 할 일:`. The scripts match the keys literally; translate them and every field reads back as `?` while the reconciliation silently finds nothing. Values are yours to write in any language.
 
 - **Paths are absolute and in backticks.** The reconciliation matches on that.
 - **Do not rename the `path`, `state`, `last commit`, `run` and `dispatch` columns.** Renamed columns make the check go quiet, which is worse than noisy.
@@ -56,12 +62,13 @@ Three mechanical rules, because a script reads this file:
 
 ## Keep it honest
 
-Do not only append to the log. When you add a line, fix the stale statements above it too — a `next` that is already done, a "not read yet" that you have since read. A ledger that contradicts itself gets ignored, and then it is worse than nothing.
+`state.md` is rewritten, not appended to. When something happens, put it in `log.md` and fix the stale statements in `state.md` — a `next` that is already done, a "not read yet" that you have since read. A ledger that contradicts itself gets ignored, and then it is worse than nothing.
 
 ## Reconcile
 
 ```text
-python3 scripts/ledger-status.py
+python3 scripts/ledger-status.py   # includes ledger-lint
+python3 scripts/ledger-lint.py     # lint alone; exits 1 on errors
 ```
 
 Run it when you start a session, when you pick work back up, and before tidying.
@@ -70,12 +77,17 @@ Run it when you start a session, when you pick work back up, and before tidying.
 |---|---|---|
 | alert | A credential expiry within 14 days | Tell the user to renew it |
 | open | Topics not yet `closed` | Continue from `next` |
-| sessions | Which session owns which topic | Point the ledger at yourself if it is wrong |
+| sessions | Each topic's `owner` | Point `owner` at yourself if you are taking it over |
+| lint | Bad frontmatter or stage, empty `next`, `confirmed` facts whose `checked_at` is over 30 days old, dead paths, a `state.md` over 4 KB, closed topics not archived | Fix errors now. Re-read stale facts and update `checked_at`, or downgrade them to `assumed` |
 | unlisted worktrees | An Orca worktree in no ledger | **Ask the user. Do not delete it.** It may be theirs |
 | ledger mismatch | Path or commit differs from reality | Check reality, then fix the ledger |
 | unreleased workers | A worker that is not `released` | Release finished ones. Ask about `user_takeover` |
 
 The script only reads. Deleting is a separate, explicit decision: only resources the user told you to remove *and* that the ledger marks `awaiting cleanup`. Check for uncommitted changes first.
+
+## Commit records every turn
+
+At the end of each turn that changed records, the owner commits them, naming each file: `git commit -m "records: <topic> <summary>" -- <files>`. Never `git add -A`. Uncommitted records get lost on a reset or swept into someone else's commit.
 
 ## What usually goes wrong
 

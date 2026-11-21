@@ -32,7 +32,7 @@ Give a one-line reason for your read. Ask once per topic. If they say "here", ne
 
 ## 4. If it stays here
 
-Create `work/<topic>/state.md` with this session in `session`, or continue the existing ledger. Write the state of the topic you leave, every time you switch. When one finishes, say what is still waiting and ask which to take.
+Create `work/<topic>/state.md` with this session as `owner`, or continue the existing ledger. Write the state of the topic you leave, every time you switch. When one finishes, say what is still waiting and ask which to take.
 
 ## 5. If it goes to a new session
 
@@ -46,7 +46,7 @@ orca worktree create --repo path:<workspace path> --name <topic> --base-branch m
 - `--name feature/X` creates the branch as `feature-X`; rename it with `git -C <worktree> branch -m feature/<topic>`.
 - Set a readable label: `orca worktree set --worktree path:<worktree> --display-name "<topic> <description>"`.
 
-Then record the worktree path (backticks) and the session id in the ledger. Find the id in the newest file whose prompt contains the ledger path — for Claude, the filename under `~/.claude/projects/<transformed path>/`; for Codex, `payload.id` on the first line of a file under `~/.codex/sessions/<y>/<m>/<d>/`.
+Then record the worktree path (backticks) as an `Other resources` row and set `owner: <agent>:<session id>` in the ledger. Find the id in the newest file whose prompt contains the ledger path — for Claude, the filename under `~/.claude/projects/<transformed path>/`; for Codex, `payload.id` on the first line of a file under `~/.codex/sessions/<y>/<m>/<d>/`.
 
 Finally, in *this* session: say what you handed off and where, restate the work in progress and its next action, and carry on. The user should never have to re-explain context you already had.
 

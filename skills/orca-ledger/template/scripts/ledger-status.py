@@ -7,10 +7,15 @@ import json
 import os
 import re
 import shutil
+import importlib.util
 import subprocess
 import sys
 from datetime import date
 from pathlib import Path
+
+_spec = importlib.util.spec_from_file_location("ledger_lint", Path(__file__).resolve().parent / "ledger-lint.py")
+lint = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(lint)
 
 # Run from a worktree and still read the records in the main folder.
 ROOT = Path(subprocess.run(
@@ -66,8 +71,11 @@ def parse_rows(text):
 
 
 def field(text, name):
-    m = re.search(rf"^- {name}: (.*)$", text, re.M)
-    return m.group(1).strip() if m else "?"
+    """A ledger header field: v2 frontmatter key, or the v1 `- key: value` line."""
+    value = lint.ledger_fields(text)[0].get(name)
+    if isinstance(value, list):
+        value = ", ".join(value)
+    return value.strip() if isinstance(value, str) and value.strip() else "?"
 
 
 def head(path):
@@ -87,8 +95,15 @@ def expiry_notices():
 
 
 def main():
-    texts = {p.parent.name: p.read_text() for p in sorted(ROOT.glob("work/*/state.md"))}
-    all_text = "\n".join(texts.values())
+    # work/<topic>/ and work/<domain>/<topic>/; archived topics only count as
+    # known paths, so their worktrees are not reported as unlisted.
+    texts, archived = {}, []
+    for topic, path, is_archived in lint.ledgers(ROOT):
+        if is_archived:
+            archived.append(path.read_text())
+        else:
+            texts[topic] = path.read_text()
+    all_text = "\n".join([*texts.values(), *archived])
 
     print("[alert]")
     for notice in expiry_notices():
@@ -98,15 +113,19 @@ def main():
     open_topics = {t: x for t, x in texts.items() if field(x, "stage") != "closed"}
     for t, x in open_topics.items():
         print(f"  {t} | {field(x, 'stage')} | next: {field(x, 'next')} "
-              f"| waiting on user: {field(x, 'waiting on user')}")
+              f"| waiting on: {field(x, 'waiting_on')}")
     if not open_topics:
         print("  none")
 
     print("[sessions]")
     for t, x in texts.items():
-        print(f"  {t} | {field(x, 'stage')} | {field(x, 'session')}")
+        print(f"  {t} | {field(x, 'stage')} | {field(x, 'owner')}")
     if not texts:
         print("  none")
+
+    print("[lint]")
+    for line in lint.lint(ROOT).lines() or ["none"]:
+        print(f"  {line}")
 
     print("[unlisted worktrees]")
     listed = orca("worktree", "list")

@@ -9,18 +9,19 @@ The user is done. Do the whole sequence without asking. Answer in the user's lan
 
 ## 1. Find the records
 
-Read the workspace's `AGENTS.md` for where records live. In a linked worktree, records belong in the main workspace, not this copy. The ledgers to close are the `work/<topic>/state.md` files whose `session` line names this session, plus any ledger this session wrote today.
+Read the workspace's `AGENTS.md` for where records live. In a linked worktree, records belong in the main workspace, not this copy. The ledgers to close are the `work/**/state.md` files whose `owner` names this session (v1 ledgers: the `session` line), plus any ledger this session wrote today.
 
 ## 2. Save the ledger
 
-For each ledger, update the header:
+For each ledger, update the frontmatter:
 
-- `stage:` the real outcome, then "session closed YYYY-MM-DD"
-- `next:` what a resumed session does first, or "none"
-- `waiting on user:` an open decision, or `no`
-- `session:` `closed YYYY-MM-DD (was <agent> <session-id>)`
+- `stage:` the real outcome, one of the stage words (usually unchanged, `user-review` or `done`) — never free text
+- `next:` what a resumed session does first, or `none` if the stage is `done` or `closed`
+- `waiting_on:` an open decision (`user: <question>`), or `none`
+- `owner:` `operator` under the operator model; otherwise leave it, the session id is how the work is found again
+- `updated:` now
 
-Append one Log line. Unfinished or unverified work goes in `next`, stated plainly; closing is not a reason to hide it. Another session's ledger gets at most one appended Log line.
+Append one line to `log.md`: `- YYYY-MM-DD HH:MM session closed: <agent>:<session-id>, <outcome>`. For a v1 ledger (no frontmatter), update its `- stage/next/waiting on user/session` lines the same way and append to its Log section. Unfinished or unverified work goes in `next`, stated plainly; closing is not a reason to hide it. Another session's ledger gets at most one appended `log.md` line.
 
 ## 3. Commit
 

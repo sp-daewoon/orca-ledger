@@ -2,7 +2,7 @@
 
 ## 1. Record the decision
 
-In `work/<topic>/decision.md`:
+In `work/<topic>/decisions.md`:
 
 - What was adopted, and why
 - What was rejected
@@ -24,6 +24,6 @@ If you found something that contradicts `map/`, fix it and update the evidence a
 - What is left: `orca orchestration worker-list --run <run_id> --terminal-state reclaimable --json`
 - Reconcile first with `python3 scripts/ledger-status.py`.
 - Worktrees and branches stay until the user says to remove them. When told, delete only what the ledger marks `awaiting cleanup`, and set those rows to `deleted`. Ask about unlisted worktrees and `user_takeover` workers. Never touch files or branches the user created.
-- When everything is finished, set the ledger's stage to `closed`.
+- When everything is finished, set the ledger's stage to `closed`. After 30 days, move the topic folder to `work/_archive/`; `ledger-lint.py` reminds you.
 - `orca worktree rm` is asynchronous. The folder lingers after the response returns and the branch cannot be deleted until it is gone. Confirm with `git worktree list` once the folder disappears.
 - Within one clone on one machine, a branch can only be checked out in one worktree. Leaving a worktree in place keeps that branch locked out of every other folder.

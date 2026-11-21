@@ -6,7 +6,7 @@ It does not orchestrate anything — Orca already does that, and so do several g
 
 You start your agent one level **above** your repos, in a small git repository of plain Markdown. It is where the agent learns what your systems are, what you already decided, which worktrees are still alive, and what it is not allowed to do.
 
-No binary. No daemon. No service to sign up for. Markdown, four skills, and one stdlib Python script.
+No binary. No daemon. No service to sign up for. Markdown, a handful of skills, and two stdlib Python scripts.
 
 ```bash
 npx skills add sp-daewoon/orca-ledger --agent claude-code
@@ -41,15 +41,17 @@ $ python3 scripts/ledger-status.py
 [alert]
   none
 [open]
-  payments-retry | implementing | next: verify worker output against tests | waiting on user: no
+  payments/retry | working | next: verify worker output against tests | waiting on: none
 [sessions]
-  payments-retry | implementing | claude 0a3f… `/Users/me/orca/workspaces/ledger/payments-retry`
+  payments/retry | working | operator
+[lint]
+  warn: map/systems.yaml:12: confirmed 41 days ago — re-read the code or downgrade to assumed
 [unlisted worktrees]
   /Users/me/orca/workspaces/api/spike-3 (spike-3)
 [ledger mismatch]
-  payments-retry /Users/me/wt/api-retry: ledger a1b2c3d, actual 9f8e7d6
+  payments/retry /Users/me/wt/api-retry: ledger a1b2c3d, actual 9f8e7d6
 [unreleased workers]
-  payments-retry dsp_4e2a reclaimable user_takeover: /Users/me/wt/api-retry
+  payments/retry dsp_4e2a reclaimable user_takeover: /Users/me/wt/api-retry
 ```
 
 It only reads. It never deletes anything.
@@ -67,7 +69,7 @@ It only reads. It never deletes anything.
   checked_at: 2026-11-09
 ```
 
-Anything not `confirmed` has to be re-read from code before the agent answers. This is the whole trick, and it is three lines of YAML.
+Anything not `confirmed` has to be re-read from code before the agent answers. And `confirmed` expires: `ledger-lint.py` flags any entry whose `checked_at` is more than 30 days old, so a fact that was true last quarter does not stay true by default. This is the whole trick, and it is three lines of YAML.
 
 **3. "Done" is not done.** A worker reporting success is not verification. Two workers agreeing is not verification either — they share a prior. orca-ledger makes the main session verify with code and tests before adopting, and hands the result to you *uncommitted* so you review the diff in your own editor and commit it yourself. The agent never commits to your branch.
 
@@ -81,13 +83,17 @@ your-ledger/
 │  ├─ systems.yaml       system ↔ repo ↔ responsibility
 │  ├─ dependencies.yaml  who calls whom
 │  └─ data.yaml          tables, events, readers, writers
-├─ domains/           one file per area of your product
+├─ domains/<domain>.md knowledge module per area: terms, invariants, risks, topics
 ├─ work/inbox.md      ideas, future plans and deferred follow-ups
-├─ work/<topic>/      state.md ledger, briefs, decisions
+├─ work/[<domain>/]<topic>/
+│  ├─ state.md        current state: frontmatter (stage, next, owner, …) + resource tables
+│  ├─ log.md          append-only history
+│  └─ decisions.md    what was decided and why
+├─ work/_archive/     closed topics older than 30 days
 ├─ knowledge/         cross-repo decisions, incidents, fixes
 ├─ rules/<repo>.md    rules a worker cannot discover on its own
 ├─ playbooks/         start, ledger, handoff, cross-agent, verify, cleanup
-└─ scripts/ledger-status.py
+└─ scripts/          ledger-status.py (reconcile), ledger-lint.py (schema and staleness)
 ```
 
 `AGENTS.md` is picked up by Claude Code, Codex, Cursor, Gemini CLI and anything else that reads an agent contract; `CLAUDE.md` is a one-line include so Claude Code gets the same file.
@@ -120,6 +126,30 @@ npx skills add sp-daewoon/orca-ledger --skill orca-ledger-inbox --agent claude-c
 
 For Codex, use `--agent codex`. Invoke it as `/orca-ledger-inbox` in Claude or `$orca-ledger-inbox` in Codex, or just ask to remember an idea. The skill can create the inbox in an existing workspace without replacing its records. New scaffolds include an empty inbox and capture rules. Existing workspaces need the capture/startup rules added to their `AGENTS.md` if they want every session to do this automatically. The skill and inbox do not send timed reminders, start sessions, or execute the list. `ledger-status.py` still reports topic ledgers; read the inbox separately.
 
+## The ledger
+
+Each topic's `state.md` starts with frontmatter that scripts can read:
+
+```yaml
+---
+id: retry
+domain: payments
+stage: working          # brief | working | verifying | user-review | waiting-external | done | closed
+next: verify worker output against tests
+waiting_on: none
+owner: operator         # operator | <agent>:<session id>
+repos: [checkout-api]
+updated: 2026-11-21 10:00
+verified_at:
+---
+```
+
+It stays small; history goes to `log.md` and reasoning to `decisions.md`, so a resuming session reads the current state and nothing else. Record files are committed by the ledger's owner at the end of each turn, file by file.
+
+By default the session working a topic owns its ledger. If one operator agent or bot runs your whole workspace, set `owner: operator`: delegated sessions own a ledger only while their task runs, then hand it back.
+
+Upgrading a workspace made from an earlier template: [docs/migrating-to-v2.md](docs/migrating-to-v2.md). Changes: [CHANGELOG.md](CHANGELOG.md).
+
 ## Requirements
 
 - [Orca](https://github.com/stablyai/orca) — `orca-ledger` is built on Orca's worktrees, workers, dispatches and session search. It is not a generic harness and does not try to be.
@@ -136,6 +166,12 @@ For Codex, use `--agent codex`. Invoke it as `/orca-ledger-inbox` in Claude or `
 Longer rationale, including what was tried and discarded: [docs/why.md](docs/why.md).
 
 한국어 안내: [docs/ko/README.md](docs/ko/README.md)
+
+## Development
+
+```bash
+python3 -m unittest discover tests
+```
 
 ## Status
 
